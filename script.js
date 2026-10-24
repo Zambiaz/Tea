@@ -5,6 +5,22 @@ const COUNTRY_LOCATION_BOUNDARIES = {
     BI: [[29.339998, -4.499983], [29.276384, -3.293907], [29.024926, -2.839258], [29.632176, -2.917858], [29.938359, -2.348487], [30.469696, -2.413858], [30.527677, -2.807632], [30.743013, -3.034285], [30.752263, -3.35933], [30.50556, -3.568567], [30.116333, -4.090138], [29.753512, -4.452389]],
 };
 
+const FALLBACK_COUNTRIES = Object.freeze([
+    { code: 'RW', name: 'Rwanda', currency: 'RWF', flag: '🇷🇼', flagImage: '/assets/flags/rw.svg', dialCode: '+250', enabled: true },
+    { code: 'UG', name: 'Uganda', currency: 'UGX', flag: '🇺🇬', flagImage: '/assets/flags/ug.svg', dialCode: '+256', enabled: true },
+    { code: 'ZM', name: 'Zambia', currency: 'ZMW', flag: '🇿🇲', flagImage: '/assets/flags/zm.svg', dialCode: '+260', enabled: true },
+    { code: 'BI', name: 'Burundi', currency: 'BIF', flag: '🇧🇮', flagImage: '/assets/flags/bi.svg', dialCode: '+257', enabled: true },
+]);
+
+async function loadAvailableCountries() {
+    try {
+        const { countries } = await BmgApi.request('/countries', { auth: false });
+        return { countries: countries.filter((country) => country.enabled), fallback: false };
+    } catch (error) {
+        return { countries: FALLBACK_COUNTRIES, fallback: true, error };
+    }
+}
+
 function countryAtCoordinates(latitude, longitude) {
     for (const [countryCode, boundary] of Object.entries(COUNTRY_LOCATION_BOUNDARIES)) {
         let inside = false;
@@ -62,12 +78,16 @@ document.addEventListener('DOMContentLoaded', () => {
         BI: /^[267]\d{7}$/,
     };
 
-    BmgApi.request('/countries', { auth: false }).then(({ countries }) => {
-        availableCountries = countries.filter((country) => country.enabled);
+    loadAvailableCountries().then(({ countries, fallback, error }) => {
+        availableCountries = countries;
         countryCode.replaceChildren(new Option('Select', ''));
         availableCountries.forEach((country) => {
             countryCode.add(new Option(`${country.name} (${country.dialCode})`, country.code));
         });
+        if (fallback) {
+            formStatus.textContent = `Country options are available, but registration needs the service connection. ${error.message}`;
+            formStatus.className = 'form-status error';
+        }
         if (linkedCountryCode && availableCountries.some((country) => country.code === linkedCountryCode)) {
             countryCode.value = linkedCountryCode;
         }
@@ -110,13 +130,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     countryCode.value = detectedCode;
                     updatePhoneDialCode();
                     updateCountryLinks();
-                    formStatus.textContent = 'Country selected from your browser location. You can change it from the country list.';
-                    formStatus.className = 'form-status success';
+                    if (!fallback) {
+                        formStatus.textContent = 'Country selected from your browser location. You can change it from the country list.';
+                        formStatus.className = 'form-status success';
+                    }
                 } else {
-                    formStatus.textContent = 'Could not detect a supported country. Choose one from the country list.';
+                    if (!fallback) formStatus.textContent = 'Could not detect a supported country. Choose one from the country list.';
                 }
             }).catch(() => {
-                if (!countryCode.value) {
+                if (!countryCode.value && !fallback) {
                     formStatus.textContent = 'Location permission was not granted. Choose your country from the list.';
                 }
             });
@@ -285,12 +307,16 @@ document.addEventListener('DOMContentLoaded', () => {
         BI: /^[267]\d{7}$/,
     };
 
-    BmgApi.request('/countries', { auth: false }).then(({ countries }) => {
-        availableCountries = countries.filter((country) => country.enabled);
+    loadAvailableCountries().then(({ countries, fallback, error }) => {
+        availableCountries = countries;
         countryCode.replaceChildren(new Option('Select', ''));
         availableCountries.forEach((country) => {
             countryCode.add(new Option(`${country.name} (${country.dialCode})`, country.code));
         });
+        if (fallback) {
+            formStatus.textContent = `Country options are available, but login needs the service connection. ${error.message}`;
+            formStatus.className = 'form-status error';
+        }
         if (availableCountries.some((country) => country.code === linkedCountryCode)) {
             countryCode.value = linkedCountryCode;
         }
@@ -337,13 +363,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     countryCode.value = detectedCode;
                     updateCountry();
                     updateCountryLinks();
-                    formStatus.textContent = 'Country selected from your browser location. You can change it from the country list.';
-                    formStatus.className = 'form-status success';
+                    if (!fallback) {
+                        formStatus.textContent = 'Country selected from your browser location. You can change it from the country list.';
+                        formStatus.className = 'form-status success';
+                    }
                 } else {
-                    formStatus.textContent = 'Could not detect a supported country. Choose one from the country list.';
+                    if (!fallback) formStatus.textContent = 'Could not detect a supported country. Choose one from the country list.';
                 }
             }).catch(() => {
-                if (!countryCode.value) {
+                if (!countryCode.value && !fallback) {
                     formStatus.textContent = 'Location permission was not granted. Choose your country from the list.';
                 }
             });
