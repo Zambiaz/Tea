@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body class="dashboard-body home-active">
+    <div class="page-shell">
+        <main class="dash-main">
+            <section class="dash-view coffee-home-view" id="view-home">
+                <div class="coffee-hero" id="coffeeHero">
+                    <img id="coffeeHeroImage" alt="" hidden>
+                    <div class="coffee-hero-caption" id="coffeeHeroCaption">Premium Coffee Experience</div>
+                    <div class="coffee-hero-indicators" id="coffeeHeroIndicators" aria-label="Featured photos"></div>
+                </div>
+
+                <div class="coffee-account-balance">
+                    <span>Account Balance</span>
+                    <strong><span id="balanceAmount">0</span> <span data-currency-label>RWF</span></strong>
+                </div>
+
+                <div class="home-action-grid coffee-action-grid">
+                    <button type="button" class="home-action-card" data-open-view="deposit"><span class="home-action-icon" aria-hidden="true">&#128179;</span><strong>Deposit</strong></button>
+                    <button type="button" class="home-action-card" data-open-view="withdraw"><span class="home-action-icon" aria-hidden="true">&#127974;</span><strong>Withdrawal</strong></button>
+                    <button type="button" class="home-action-card" data-open-view="task"><span class="home-action-icon" aria-hidden="true">&#127873;</span><strong>Task Center</strong></button>
+                </div>
+
+                <section class="coffee-about-card">
+                    <h2 id="coffeeAboutTitle">About Us</h2>
+                    <div id="coffeeAboutText">
+                        <p>We connect our members with carefully selected products and offer clear account tools to manage their activity.</p>
+                        <p>Members can track their plans, invite friends, and review available tasks and account transactions from one place.</p>
+                    </div>
+                </section>
+
+            </section>
+
+            <section class="dash-view" id="view-task" hidden>
+                <div class="task-center-heading">
+                    <div><p class="eyebrow">YOUR ACTIVITIES</p><h1>Task Center</h1></div>
+                </div>
+                <section class="invite-rewards-panel">
+                    <div class="invite-rewards-heading"><div><p class="eyebrow">INVITE &amp; EARN</p><h2>Referral rewards</h2></div><button type="button" class="btn btn-secondary btn-small" data-open-view="team">Share invite</button></div>
+                    <div class="invite-rewards-summary"><span>Registered invites <strong id="inviteRewardCount">0</strong></span><span>Rewards claimed <strong id="inviteRewardsClaimed">0</strong> <span data-currency-label>RWF</span></span></div>
+                    <div class="task-referral-link"><input id="taskReferralLink" type="text" readonly aria-label="Your referral link" placeholder="Loading referral link..."><button type="button" class="btn btn-secondary btn-small" id="copyTaskReferralLink">Copy</button></div>
+                    <p class="form-status" id="inviteRewardsStatus" aria-live="polite"></p>
+                    <div class="invite-rewards-list" id="inviteRewardsList"><p>Loading invite rewards...</p></div>
+                </section>
+            </section>
+
+            <section class="dash-view" id="view-product" hidden>
+                <div class="product-page-heading"><h1>Products</h1><button type="button" class="add-product-button" id="addProductButton" aria-label="Add another product" title="Add another product" hidden>+</button></div>
+                <div class="product-tabs" role="tablist" aria-label="Product lists">
+                    <button type="button" class="product-tab active" role="tab" aria-selected="true" data-product-tab="all">All Products</button>
+                    <button type="button" class="product-tab" role="tab" aria-selected="false" data-product-tab="mine">My Plans</button>
+                </div>
+                <div id="allProductsView" role="tabpanel">
+                    <div id="productGrid" class="product-grid"><p>Loading...</p></div>
+                </div>
+                <div id="myPlansView" role="tabpanel" hidden>
+                    <div id="myPlansGrid" class="my-plans-grid"><p>Loading plans...</p></div>
+                </div>
+            </section>
+
+            <section class="dash-view" id="view-team" hidden>
+                <div class="team-reference-layout">
+                    <section class="team-referral-card">
+                        <div class="team-referral-field">
+                            <p class="team-referral-label">Your referral code</p>
+                            <div class="team-copy-row"><strong id="referralCodeValue">-</strong><button type="button" class="team-copy-button" id="copyReferralBtn">Copy</button></div>
+                        </div>
+                        <div class="team-referral-field">
+                            <label for="referralLinkValue">Your referral link</label>
+                            <div class="team-copy-row"><input id="referralLinkValue" type="text" readonly value=""><button type="button" class="team-copy-button" id="copyReferralLinkBtn">Copy</button></div>
+                        </div>
+                        <p class="team-share-label">Share your referral link</p>
+                        <div class="team-share-actions">
+                            <button type="button" data-share-referral="whatsapp">📱 WhatsApp</button>
+                            <button type="button" data-share-referral="telegram">✈️ Telegram</button>
+                            <button type="button" data-share-referral="facebook">👍 Facebook</button>
+                        </div>
+                        <p class="form-status" id="teamInviteStatus" aria-live="polite"></p>
+                        <p class="form-status" id="teamDataStatus" aria-live="polite"></p>
+                    </section>
+                    <div class="team-stats-row">
+                        <div class="team-stat-card"><span>Total invited</span><strong id="teamMemberCount">0</strong></div>
+                        <div class="team-stat-card"><span>Total earnings</span><strong id="teamTotalEarnings">0 <span data-currency-label>RWF</span></strong></div>
+                    </div>
+                    <div class="team-commission-tabs" id="teamCommissionTabs" role="tablist" aria-label="Commission levels"><p>Loading commission levels...</p></div>
+                    <section class="team-commission-detail" id="teamCommissionDetail" aria-live="polite">
+                        <strong id="teamSelectedLevelTitle">Level 1 commission</strong>
+                        <p><span>Commission on deposits:</span> <b id="teamSelectedCommission">0%</b></p>
+                        <p><span>Members at this level:</span> <b id="teamLevelMemberCount">0</b></p>
+                        <p class="team-level-empty" id="teamLevelEmptyMessage">Share your referral link to start building your team.</p>
+                    </section>
+                </div>
+            </section>
+
+            <section class="dash-view" id="view-me" hidden>
+                <div class="me-page-heading"><div class="me-avatar-large" id="meAvatar">U</div><div><p class="eyebrow">MY ACCOUNT</p><h1 id="meHeadingName">Your profile</h1><span id="meProfilePhone">-</span></div></div>
+                <div class="me-balance-card"><span>Account Balance</span><strong><span id="meBalanceAmount">0</span> <span data-currency-label>RWF</span></strong></div>
+                <div class="me-quick-links" aria-label="Account shortcuts">
+                    <button type="button" data-open-view="history"><span aria-hidden="true">&#128202;</span>Transaction History <b aria-hidden="true">&#8250;</b></button>
+                    <button type="button" data-open-view="product"><span aria-hidden="true">&#128717;</span>My Investment <b aria-hidden="true">&#8250;</b></button>
+                    <button type="button" data-open-view="task"><span aria-hidden="true">&#127873;</span>Task Center <b aria-hidden="true">&#8250;</b></button>
+                    <button type="button" data-open-view="support"><span aria-hidden="true">&#127911;</span>Support Center <b aria-hidden="true">&#8250;</b></button>
+                </div>
+                <div class="dash-card glass-card me-profile-card">
+                    <h2>Account Information</h2>
+                    <p>Account Status: <strong id="meProfileStatus">-</strong></p>
+                    <p>Member Since: <strong id="meProfileCreated">-</strong></p>
+                </div>
+                <section class="dash-card glass-card payout-account-card" id="payoutAccountPanel">
+                    <h2>Withdrawal Account</h2>
+                    <p class="payout-account-help">Bind a payout account before submitting a withdrawal.</p>
+                    <div class="form-field"><label for="payoutMethod">Account type</label><select id="payoutMethod"><option value="mtn">MTN Mobile Money</option><option value="airtel">Airtel Money</option><option value="bank">Bank account</option></select></div>
+                    <div class="form-field"><label for="payoutAccountHolder">Account holder name</label><input type="text" id="payoutAccountHolder" autocomplete="name" maxlength="100"></div>
+                    <div class="form-field payout-mobile-field"><label for="payoutMobileNumber">Mobile money number</label><input type="tel" id="payoutMobileNumber" inputmode="numeric" maxlength="10" placeholder="07XXXXXXXX"></div>
+                    <div class="form-field payout-bank-name-field" hidden><label for="payoutBankName">Bank name</label><input type="text" id="payoutBankName" maxlength="100"></div>
+                    <div class="form-field payout-bank-number-field" hidden><label for="payoutBankNumber">Bank account number</label><input type="text" id="payoutBankNumber" maxlength="34" autocomplete="off"></div>
+                    <p class="form-status" id="payoutAccountStatus" aria-live="polite"></p>
+                    <button type="button" class="btn btn-primary btn-small" id="savePayoutAccountBtn">Save withdrawal account</button>
+                </section>
+                <div class="dash-card glass-card me-settings-card">
+                    <h2>Settings</h2>
+                    <div class="form-field">
+                        <label for="appearanceSelect">Appearance</label>
+                        <select id="appearanceSelect"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select>
+                    </div>
+                    <p class="form-status" id="preferencesStatus"></p>
+                </div>
+                <div class="dash-card glass-card me-notifications-card">
+                    <h2>Notifications</h2>
+                    <label class="preference-toggle"><input type="checkbox" id="notificationsToggle" checked><span>Receive account notifications</span></label>
+                </div>
+                <button type="button" class="btn btn-secondary btn-small" data-open-view="history">History</button>
+                <div class="dash-card glass-card me-security-card">
+                    <h2>Change Password</h2>
+                    <div class="form-field"><label for="currentPassword">Current Password</label><input type="password" id="currentPassword"></div>
+                    <div class="form-field"><label for="newPassword">New 5-digit Password</label><input type="password" id="newPassword" inputmode="numeric" pattern="[0-9]{5}" minlength="5" maxlength="5" autocomplete="new-password"></div>
+                    <p class="form-status" id="passwordStatus"></p>
+                    <button type="button" class="btn btn-primary btn-small" id="changePasswordBtn">Change Password</button>
+                </div>
+                <button type="button" class="btn btn-secondary btn-block" id="logoutBtn">Logout</button>
+            </section>
+
+            <section class="dash-view" id="view-history" hidden>
+                <div class="history-page-heading"><p class="eyebrow">ACCOUNT ACTIVITY</p><h1>History</h1><span>Deposits, withdrawals, rewards and tasks</span></div>
+                <div class="history-filters"><button type="button" class="history-filter active" data-history-category="all">All</button><button type="button" class="history-filter" data-history-category="deposits">Deposits</button><button type="button" class="history-filter" data-history-category="withdrawals">Withdrawals</button><button type="button" class="history-filter" data-history-category="rewards">Rewards</button><button type="button" class="history-filter" data-history-category="tasks">Tasks</button></div>
+                <div class="dash-card glass-card" id="historyList"><p>Loading...</p></div>
+                <button type="button" class="btn btn-secondary btn-small" data-open-view="me">Back</button>
+            </section>
+
+            <section class="dash-view" id="view-deposit" hidden>
+                <div class="payment-section-title">PAYMENT METHOD</div>
+                <div class="payment-method-list" id="depositMethodCards"></div>
+                <select id="depositMethod" class="visually-hidden-select"><option value="mtn">MTN Mobile Money</option><option value="airtel">Airtel Money</option></select>
+                <section class="deposit-amount-picker">
+                    <label for="depositAmount">Select Amount (<span data-currency-label>RWF</span>)</label>
+                    <div class="deposit-amount-options" id="depositAmountOptions"></div>
+                    <input type="number" id="depositAmount" min="1" step="1" placeholder="Enter another amount">
+                </section>
+                <div class="payment-details-card" id="depositDetailsCard">
+                    <h2><span class="details-icon">&#10003;</span><span id="depositDetailsTitle">MTN MoMo merchant details</span></h2>
+                    <div class="copy-detail-row"><span><small>MERCHANT NAME</small><strong id="depositMerchantName">-</strong></span><button type="button" class="copy-detail-button" data-copy-target="depositMerchantName">Copy</button></div>
+                    <div class="copy-detail-row"><span><small>MERCHANT NUMBER</small><strong id="depositMerchantPhone">-</strong></span><button type="button" class="copy-detail-button" data-copy-target="depositMerchantPhone">Copy</button></div>
+                    <p class="payment-instructions" id="depositInstructions"></p>
+                    <p class="deposit-verification-note">Your deposit is added after payment verification.</p>
+                    <button type="button" class="pay-now-button" id="depositPayButton">&#9742; PAY RWF 0 NOW</button>
+                </div>
+                <div class="dash-card glass-card deposit-extra-fields">
+                    <div class="form-field"><label for="depositSenderPhone">Your payment phone number</label><input type="tel" id="depositSenderPhone" inputmode="numeric" placeholder="07XXXXXXXX" maxlength="10" required></div>
+                    <div class="form-field"><label for="depositPaymentProof">Payment reference</label><textarea id="depositPaymentProof" rows="2" maxlength="500" placeholder="Enter the transaction ID after paying"></textarea></div>
+                    <p class="form-status" id="depositStatus"></p>
+                    <button type="button" class="btn btn-primary btn-small" id="depositSubmitBtn">Submit for verification</button>
+                </div>
+                <button type="button" class="btn btn-secondary btn-small" data-open-view="home">Back</button>
+            </section>
+
+            <section class="dash-view" id="view-withdraw" hidden>
+                <div class="withdraw-balance-card"><h2>Available to withdraw</h2><strong id="withdrawBalance">RWF 0</strong><p id="withdrawBonusMessage"></p></div>
+                <div class="bound-account-panel" id="withdrawBoundAccount"><div class="bound-account-heading"><div><p class="eyebrow">SAVED DESTINATION</p><h2 id="withdrawAccountType">No account bound</h2></div><button type="button" class="btn btn-secondary btn-small" data-open-view="me">Manage in Me</button></div><p id="withdrawAccountDetails">Add a withdrawal account in Me before requesting a payout.</p></div>
+                <div class="form-field payment-amount-field">
+                    <label for="withdrawAmount">Amount to withdraw</label>
+                    <input type="number" id="withdrawAmount" min="1" step="1" placeholder="e.g. 5,000">
+                    <small id="withdrawMinimumMessage"></small>
+                </div>
+                <div class="withdraw-calculation">
+                    <span>Withdrawal fee (<strong id="withdrawFeeRate">0%</strong>): <b id="withdrawFeeAmount">RWF 0</b></span>
+                    <span>Amount after fees: <strong id="withdrawReceivedAmount">RWF 0</strong></span>
+                </div>
+                <div class="withdraw-availability" id="withdrawAvailability">Cash-out open according to the configured schedule.</div>
+                <div class="withdraw-rules" id="withdrawRules"></div>
+                <div class="dash-card glass-card withdrawal-submit-card">
+                    <p class="form-status" id="withdrawStatus"></p>
+                    <button type="button" class="btn btn-primary btn-block" id="withdrawSubmitBtn" disabled>Submit Withdrawal</button>
+                </div>
+                <button type="button" class="btn btn-secondary btn-small" data-open-view="home">Back</button>
+            </section>
+
+            <section class="dash-view" id="view-support" hidden>
+                <h1>Support</h1>
+                <div class="dash-card glass-card support-intro-card"><h2 id="supportMessage">Need help?</h2><p class="support-online-status"><span class="support-online-indicator" aria-hidden="true"></span><span id="supportAvailability">Online</span></p></div>
+                <div class="support-channels" id="supportChannels"><p>Loading Telegram support...</p></div>
+                <button type="button" class="btn btn-secondary btn-small" data-open-view="home">Back</button>
+            </section>
+        </main>
+
+        <nav class="bottom-nav" aria-label="Main navigation">
+            <button type="button" class="bottom-nav-item active" data-open-view="home"><svg class="bottom-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.7 12 3l9 7.7v9.8h-6v-6h-6v6H3z"></path></svg><span>Home</span></button>
+            <button type="button" class="bottom-nav-item" data-open-view="product"><svg class="bottom-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 13H5L6 8Zm3 0V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg><span>Products</span></button>
+            <button type="button" class="bottom-nav-item" data-open-view="team"><svg class="bottom-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 21v-2a7 7 0 0 1 14 0v2H2Zm15-7a5 5 0 0 1 5 5v2h-4v-2a8.9 8.9 0 0 0-1-4.1Z"></path></svg><span>Team</span></button>
+            <button type="button" class="bottom-nav-item" data-open-view="me"><svg class="bottom-nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4a3.2 3.2 0 1 1 0 6.4A3.2 3.2 0 0 1 12 6Zm0 13.2a7.1 7.1 0 0 1-5.5-2.6c.1-2.5 3.7-3.8 5.5-3.8s5.4 1.3 5.5 3.8a7.1 7.1 0 0 1-5.5 2.6Z"></path></svg><span>Me</span></button>
+        </nav>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="notification-client.js"></script>
+    <script src="dashboard.js?v=admin-live-v2"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+.env
+.vercel/
+node_modules/
+server/bmg.sqlite
+server/bmg.sqlite-shm
+server/bmg.sqlite-wal
+bmg.sqlite
+k v/

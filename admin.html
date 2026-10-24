@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css?v=admin-users-v3">
+</head>
+<body class="admin-body">
+
+    <!-- Shown until a valid admin session exists; the backend re-checks the admin role on every API call regardless -->
+    <div class="admin-login-gate" id="adminLoginGate">
+        <form class="panel admin-login-form" id="adminLoginForm" novalidate>
+            <div class="admin-brand admin-login-brand">
+                <span class="admin-brand-name">Admin Panel</span>
+            </div>
+            <div class="form-field">
+                <label for="adminLoginPhone">Phone Number or Admin Email</label>
+                <input type="text" id="adminLoginPhone" placeholder="Phone number or admin@example.com" autocomplete="username" required>
+            </div>
+            <div class="form-field">
+                <label for="adminLoginCountry">Country for phone number</label>
+                <select id="adminLoginCountry">
+                    <option value="">Choose country</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="adminLoginPassword">Password</label>
+                <input type="password" id="adminLoginPassword" required>
+            </div>
+            <p class="form-status" id="adminLoginStatus" role="status" aria-live="polite"></p>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+    </div>
+
+    <div class="admin-shell" id="adminShell" hidden>
+        <header class="admin-topbar">
+            <div class="admin-brand">
+                <span class="admin-brand-name">Admin Panel</span>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="adminLogoutBtn">Logout</button>
+        </header>
+
+        <div class="admin-layout">
+            <nav class="admin-sidenav" aria-label="Admin sections">
+                <button type="button" class="admin-nav-item is-active" data-admin-tab="overview">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"></rect><rect x="13" y="4" width="7" height="7" rx="1.5"></rect><rect x="4" y="13" width="7" height="7" rx="1.5"></rect><rect x="13" y="13" width="7" height="7" rx="1.5"></rect></svg>
+                    <span>Overview</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="users">
+                    <span aria-hidden="true">♙</span>
+                    <span>Users</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="active-users">
+                    <span aria-hidden="true">✓</span>
+                    <span>Active Users</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="live-users">
+                    <span aria-hidden="true">●</span>
+                    <span>Live Users</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="home-settings">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 11 12 4l9 7"></path><path d="M5 10v10h14V10M9 20v-6h6v6"></path></svg>
+                    <span>Home Page</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="products">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 8l1-4h10l1 4"></path><path d="M4 8h16l-1.2 11.2a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 8Z"></path></svg>
+                    <span>Products</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="country-settings">
+                    <span aria-hidden="true">🌍</span>
+                    <span>Country Settings</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="user-access">
+                    <span aria-hidden="true">👤</span>
+                    <span>User Access</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="announcements">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 10v4l3 1 10 4V5L7 9l-3 1Z"></path><path d="M9.5 15.5 10 19"></path></svg>
+                    <span>Announcements</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="promoters">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="8" cy="8" r="3"></circle><circle cx="17" cy="9" r="2.5"></circle><path d="M2.5 20c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6M14 15c3 0 5.5 2.2 5.5 5"></path></svg>
+                    <span>Promoters</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="chakin-settings">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="M9 9h.01M15 9h.01M8 15c1.2 1.3 2.6 2 4 2s2.8-.7 4-2"></path></svg>
+                    <span>Chakin</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="giftcode-settings">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="2"></rect><path d="M4 12h16M12 8v12M8 8c0-2 1.5-4 4-4s4 2 4 4"></path></svg>
+                    <span>Gift Codes</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="deposit-settings">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
+                    <span>Deposit</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="withdraw-settings">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"></path></svg>
+                    <span>Withdraw</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="support-settings">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0"></path><rect x="2.5" y="13" width="5" height="6" rx="1.5"></rect><rect x="16.5" y="13" width="5" height="6" rx="1.5"></rect></svg>
+                    <span>Support</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="rules-settings">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path><circle cx="9" cy="7" r="2"></circle><circle cx="15" cy="12" r="2"></circle><circle cx="11" cy="17" r="2"></circle></svg>
+                    <span>Rules &amp; Settings</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="audit-log">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 4h9l3 3v13H6z"></path><path d="M9 9h6M9 13h6M9 17h3"></path></svg>
+                    <span>Audit Log</span>
+                </button>
+            </nav>
+
+            <main class="admin-content" id="adminContent">
+
+                <!-- OVERVIEW -->
+                <section class="admin-section overview-admin-section is-active" data-admin-section="overview">
+                    <div class="overview-heading-row">
+                        <div><h1>Overview</h1><p class="admin-subtitle">Live snapshot of platform activity.</p></div>
+                        <span class="overview-live-badge"><i></i>Live data</span>
+                    </div>
+
+                    <div class="stat-grid overview-stat-grid">
+                        <button type="button" class="stat-card overview-stat-action" data-admin-open="users"><p class="stat-label">Total Users</p><p class="stat-value" id="overviewTotalUsers">—</p></button>
+                        <button type="button" class="stat-card overview-stat-action" data-admin-open="active-users"><p class="stat-label">Active Users</p><p class="stat-value" id="overviewActivePurchasers">—</p><small>Completed a product purchase</small></button>
+                        <button type="button" class="stat-card overview-stat-action" data-admin-open="live-users"><p class="stat-label">Live Users</p><p class="stat-value" id="overviewLiveUsers">—</p><small>Seen in the last 20 seconds</small></button>
+                        <div class="stat-card"><p class="stat-label">Promoters</p><p class="stat-value" id="overviewPromoters">—</p></div>
+                        <div class="stat-card"><p class="stat-label">Total Products</p><p class="stat-value" id="overviewTotalProducts">—</p></div>
+                        <div class="stat-card"><p class="stat-label">Pending Deposits</p><p class="stat-value" id="overviewPendingDeposits">—</p></div>
+                        <div class="stat-card"><p class="stat-label">Pending Withdrawals</p><p class="stat-value" id="overviewPendingWithdrawals">—</p></div>
+                    </div>
+
+                    <div class="overview-quick-actions">
+                        <button type="button" class="overview-action" data-admin-open="users"><span class="overview-action-icon">♙</span><span><strong>Users</strong><small>View and manage all accounts</small></span></button>
+                        <button type="button" class="overview-action" data-admin-open="active-users"><span class="overview-action-icon">✓</span><span><strong>Active Users</strong><small>Completed purchases and account status</small></span></button>
+                        <button type="button" class="overview-action" data-admin-open="live-users"><span class="overview-action-icon">●</span><span><strong>Live Users</strong><small>Currently browsing the app</small></span></button>
+                        <button type="button" class="overview-action" data-admin-open="promoters"><span class="overview-action-icon">♧</span><span><strong>Promoters</strong><small>Referral network and activity</small></span></button>
+                        <button type="button" class="overview-action" data-admin-open="products"><span class="overview-action-icon">□</span><span><strong>Products</strong><small>Investments and stock</small></span></button>
+                        <button type="button" class="overview-action" data-admin-open="giftcode-settings"><span class="overview-action-icon">◇</span><span><strong>Gift Codes</strong><small>Rewards and redemptions</small></span></button>
+                        <button type="button" class="overview-action" data-admin-open="deposit-settings"><span class="overview-action-icon">⌁</span><span><strong>Payment Methods</strong><small>MTN and Airtel</small></span></button>
+                    </div>
+
+                    <div class="overview-panels-grid">
+                        <section class="panel overview-mini-panel"><div class="overview-panel-heading"><h2>Products</h2><button type="button" class="text-action" data-admin-open="products">Manage</button></div><div class="overview-status-row"><span>Active products</span><strong id="overviewActiveProducts">—</strong></div><div class="overview-status-row"><span>Current catalog</span><strong id="statProducts">—</strong></div></section>
+                        <section class="panel overview-mini-panel"><div class="overview-panel-heading"><h2>Gift Codes</h2><button type="button" class="text-action" data-admin-open="giftcode-settings">Manage</button></div><div class="overview-status-row"><span>Total generated</span><strong id="overviewGiftTotal">—</strong></div><div class="overview-status-row"><span>Active codes</span><strong id="overviewGiftActive">—</strong></div><div class="overview-status-row"><span>Expired/disabled</span><strong id="overviewGiftInactive">—</strong></div></section>
+                        <section class="panel overview-mini-panel"><div class="overview-panel-heading"><h2>Payment Methods</h2><button type="button" class="text-action" data-admin-open="deposit-settings">Edit</button></div><div class="overview-method-row"><span class="method-dot method-mtn">M</span><span>MTN</span><strong id="overviewMtnStatus">—</strong></div><div class="overview-method-row"><span class="method-dot method-airtel">A</span><span>Airtel</span><strong id="overviewAirtelStatus">—</strong></div></section>
+                    </div>
+                    <section class="panel overview-currency-panel">
+                        <div class="panel-heading"><h2>Approved Financial Activity by Currency</h2></div>
+                        <div class="admin-data-table-wrap"><table class="admin-data-table">
+                            <thead><tr><th>Currency</th><th>Approved Deposits</th><th>Approved Withdrawals</th><th>Remaining Funds</th><th>User Balances</th></tr></thead>
+                            <tbody id="overviewCurrencySummary"><tr><td colspan="5">Loading financial summary...</td></tr></tbody>
+                        </table></div>
+                    </section>
+
+                </section>
+
+                <section class="admin-section" data-admin-section="users">
+                    <div class="users-heading">
+                        <div>
+                            <h1>Users</h1>
+                            <p class="admin-subtitle">Search and manage all accounts, including promoters and admin accounts. Use the filters to narrow the list.</p>
+                        </div>
+                        <p class="users-total-badge" id="usersTotalBadge">Loading accounts...</p>
+                    </div>
+                    <form class="panel admin-form users-filter-form" id="usersDirectoryForm">
+                        <div class="admin-filter-grid">
+                            <div class="form-field"><label for="usersDirectorySearch">Search name, phone, or referral code</label><input type="search" id="usersDirectorySearch" maxlength="100" autocomplete="off" placeholder="Search name or phone"></div>
+                            <div class="form-field"><label for="usersDirectoryStatus">Account status</label><select id="usersDirectoryStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Suspended">Suspended</option><option value="Blocked">Blocked</option></select></div>
+                            <div class="form-field"><label for="usersDirectoryRole">Account role</label><select id="usersDirectoryRole"><option value="">All roles</option><option value="user">User</option><option value="admin">Admin</option></select></div>
+                            <div class="form-field"><label for="usersDirectoryType">Account type</label><select id="usersDirectoryType"><option value="">All account types</option><option value="regular">Regular</option><option value="promoter">Promoter</option><option value="admin">Admin</option></select></div>
+                            <div class="form-field"><label for="usersDirectoryCountry">Country</label><select id="usersDirectoryCountry"><option value="">All countries</option><option value="RW">🇷🇼 Rwanda</option><option value="UG">🇺🇬 Uganda</option><option value="ZM">🇿🇲 Zambia</option><option value="BI">🇧🇮 Burundi</option></select></div>
+                            <div class="form-field"><label for="usersDirectoryActivity">Activity</label><select id="usersDirectoryActivity"><option value="">All activity</option><option value="live">Live now</option><option value="recent">Recently active</option><option value="offline">Offline</option></select></div>
+                        </div>
+                        <div class="users-filter-actions">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                            <button type="button" class="btn btn-secondary" id="clearUsersDirectory">Clear</button>
+                        </div>
+                        <p class="form-status" id="usersDirectoryStatusMessage" role="status" aria-live="polite"></p>
+                    </form>
+                    <div class="panel admin-data-table-wrap">
+                        <table class="admin-data-table users-directory-table">
+                            <thead><tr><th>User</th><th>Role / Type</th><th>Status</th><th>Balance</th><th>Deposits</th><th>Withdrawals</th><th>Products</th><th>Referrals</th><th>Last active</th><th>Current page</th><th>Actions</th></tr></thead>
+                            <tbody id="usersDirectoryTableBody"><tr><td colspan="11">Loading users...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="users-pagination">
+                        <span id="usersPaginationSummary">—</span>
+                        <div>
+                            <button type="button" class="btn btn-secondary btn-sm" id="usersPreviousPage" disabled>Previous</button>
+                            <button type="button" class="btn btn-secondary btn-sm" id="usersNextPage" disabled>Next</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-section" data-admin-section="active-users">
+                    <h1>Active Users</h1>
+                    <p class="admin-subtitle">Accounts with at least one completed product purchase. Account decisions and financial activity update from the same database used by user accounts.</p>
+                    <form class="panel admin-form" id="activeUsersSearchForm">
+                        <div class="admin-filter-grid">
+                            <div class="form-field"><label for="activeUsersSearch">Search name or phone</label><input type="search" id="activeUsersSearch" maxlength="100" autocomplete="off"></div>
+                            <div class="form-field"><label for="activeUsersStatus">Account status</label><select id="activeUsersStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Suspended">Suspended</option><option value="Blocked">Blocked</option></select></div>
+                            <div class="form-field"><label for="activeUsersRole">Role</label><select id="activeUsersRole"><option value="">All roles</option><option value="user">User</option><option value="admin">Admin</option></select></div>
+                            <div class="form-field"><label for="activeUsersActivity">Activity</label><select id="activeUsersActivity"><option value="all">All activity</option><option value="live">Live now</option><option value="recent">Recently active</option><option value="offline">Offline</option></select></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Search Active Users</button>
+                        <p class="form-status" id="activeUsersStatusMessage" role="status" aria-live="polite"></p>
+                    </form>
+                    <div class="panel admin-data-table-wrap">
+                        <table class="admin-data-table">
+                            <thead><tr><th>User</th><th>Status</th><th>Balance</th><th>Deposits</th><th>Withdrawals</th><th>Products</th><th>Referrer</th><th>Last Active</th><th>Current Page</th></tr></thead>
+                            <tbody id="activeUsersTableBody"><tr><td colspan="9">Search to load active users.</td></tr></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="admin-section" data-admin-section="live-users">
+                    <h1>Live Users</h1>
+                    <p class="admin-subtitle">Authenticated users active in the last 20 seconds. The list refreshes automatically while this section is open.</p>
+                    <form class="panel admin-form" id="liveUsersSearchForm">
+                        <div class="admin-filter-grid">
+                            <div class="form-field"><label for="liveUsersSearch">Search name or phone</label><input type="search" id="liveUsersSearch" maxlength="100" autocomplete="off"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Search Live Users</button>
+                        <p class="form-status" id="liveUsersStatusMessage" role="status" aria-live="polite"></p>
+                    </form>
+                    <div class="panel admin-data-table-wrap">
+                        <table class="admin-data-table">
+                            <thead><tr><th>User</th><th>Country</th><th>Status</th><th>Current Page</th><th>Last Seen</th></tr></thead>
+                            <tbody id="liveUsersTableBody"><tr><td colspan="5">Loading live users...</td></tr></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- PRODUCTS -->
+                <section class="admin-section" data-admin-section="products">
+                    <h1>Products</h1>
+                    <p class="admin-subtitle">Create and manage the products available to users.</p>
+
+                    <form class="panel admin-form product-management-form" id="productForm" novalidate>
+                        <input type="hidden" id="productId">
+                        <div class="product-form-grid">
+                            <div class="form-field"><label for="productName">Product Name</label><input type="text" id="productName" required></div>
+                            <div class="form-field"><label for="productCategory">Category</label><input type="text" id="productCategory" required></div>
+                            <div class="form-field"><label for="productPrice">Price (RWF)</label><input type="number" id="productPrice" min="0" step="1" required></div>
+                            <div class="form-field"><label for="productStock">Available Slots</label><input type="number" id="productStock" min="0" step="1" required></div>
+                            <div class="form-field"><label for="productTotalSlots">Total Slots</label><input type="number" id="productTotalSlots" min="1" step="1" value="1000" required></div>
+                            <div class="form-field"><label for="productInvestmentDuration">Investment Duration (days)</label><input type="number" id="productInvestmentDuration" min="0" step="1" value="0" required></div>
+                            <div class="form-field"><label for="productDailyIncomeAmount">Daily Income (RWF)</label><input type="number" id="productDailyIncomeAmount" min="0" step="1" value="0" required></div>
+                            <div class="form-field"><label for="productTotalIncome">Total Return (RWF)</label><input type="number" id="productTotalIncome" min="0" step="1" value="0" required></div>
+                            <div class="form-field product-form-wide"><label for="productImageUrl">Product Image</label><input type="url" id="productImageUrl" placeholder="https://example.com/product.jpg"></div>
+                            <div class="form-field"><label for="productCardColor">Card Color</label><input type="color" id="productCardColor" value="#363b45"></div>
+                            <div class="form-field"><label for="productHeaderColor">Header Color</label><input type="color" id="productHeaderColor" value="#73777d"></div>
+                            <div class="form-field"><label for="productButtonColor">Buy Button Color</label><input type="color" id="productButtonColor" value="#6b432b"></div>
+                            <div class="form-field product-form-wide"><label for="productLink">Product Link</label><input type="url" id="productLink" placeholder="https://example.com/product"></div>
+                            <div class="form-field product-form-wide"><label for="productDescription">Description</label><textarea id="productDescription" rows="3"></textarea></div>
+                            <div class="form-field"><label for="productStatus">Product Status</label><select id="productStatus"><option value="active">Available</option><option value="sold_out">Sold Out</option><option value="open_soon">Open Soon</option><option value="inactive">Hidden</option></select></div>
+                        </div>
+                        <div class="product-form-actions"><button type="submit" class="btn btn-primary" id="productSubmitBtn">Add Product</button><button type="button" class="btn btn-secondary" id="productCancelEditBtn" hidden>Cancel Edit</button></div>
+                        <p class="form-status" id="productFormStatus" role="status" aria-live="polite"></p>
+                    </form>
+
+                    <div class="panel">
+                        <div class="panel-heading"><h2>Product List</h2></div>
+                        <ul class="admin-list" id="productList"></ul>
+                        <div class="empty-state" id="productEmptyState"><p>No products yet.</p></div>
+                    </div>
+                </section>
+
+                <!-- ANNOUNCEMENTS -->
+                <section class="admin-section" data-admin-section="announcements">
+                    <h1>Announcements</h1>
+                    <p class="admin-subtitle">Publish updates shown on the user Me screen.</p>
+
+                    <form class="panel admin-form" id="announcementForm" novalidate>
+                        <div class="form-field">
+                            <label for="announcementTitle">Title</label>
+                            <input type="text" id="announcementTitle" placeholder="e.g. Scheduled maintenance" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="announcementMessage">Message</label>
+                            <textarea id="announcementMessage" rows="3" placeholder="Write the announcement..." required></textarea>
+                        </div>
+                        <div class="form-field"><label for="announcementPublishAt">Publish date/time</label><input type="datetime-local" id="announcementPublishAt"></div>
+                        <div class="form-field"><label for="announcementExpiresAt">Expiry date/time (optional)</label><input type="datetime-local" id="announcementExpiresAt"></div>
+                        <button type="submit" class="btn btn-primary">Publish Announcement</button>
+                    </form>
+
+                    <div class="panel">
+                        <div class="panel-heading"><h2>Published Announcements</h2></div>
+                        <ul class="admin-list" id="announcementList"></ul>
+                        <div class="empty-state" id="announcementEmptyState">
+                            <p>No announcements published yet.</p>
+                            <p class="empty-state-hint">Published announcements will appear in the user dashboard's Announcements area.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PROMOTERS -->
+                <section class="admin-section" data-admin-section="promoters">
+                    <h1>Promoters</h1>
+                    <p class="admin-subtitle">Manage promoter accounts and access controls.</p>
+                    <form class="panel admin-form" id="promoterForm" novalidate>
+                        <div class="form-field"><label for="promoterNameInput">Promoter Name / ID</label><input id="promoterNameInput" required></div>
+                        <button type="submit" class="btn btn-primary">Add Promoter</button>
+                        <p class="form-status" id="promoterFormStatus" role="status" aria-live="polite"></p>
+                    </form>
+                    <div class="panel"><ul class="admin-list" id="promoterList"></ul><div class="empty-state" id="promoterEmptyState"><p>No promoters yet.</p></div></div>
+                </section>
+
+                <!-- CHAKIN SETTINGS -->
+                <section class="admin-section" data-admin-section="chakin-settings">
+                    <h1>Chakin</h1>
+                    <p class="admin-subtitle">Configure the daily check-in reward shown to users.</p>
+
+                    <form class="panel admin-form" id="chakinSettingsForm" novalidate>
+                        <label class="list-action"><span>Enable Chakin</span><input type="checkbox" id="chakinEnabled"></label>
+                        <div class="form-field"><label for="chakinReward">Reward Amount (RWF)</label><input type="number" id="chakinReward" min="0" value="0"></div>
+                        <div class="form-field"><label for="chakinCooldownHours">Cooldown (hours)</label><input type="number" id="chakinCooldownHours" min="0" value="24"></div>
+                        <div class="form-field"><label for="chakinMaxCheckins">Maximum Check-ins per User (0 = unlimited)</label><input type="number" id="chakinMaxCheckins" min="0" value="0"></div>
+                        <div class="form-field"><label for="chakinStartDate">Start Date</label><input type="date" id="chakinStartDate"></div>
+                        <div class="form-field"><label for="chakinEndDate">End Date</label><input type="date" id="chakinEndDate"></div>
+                        <div class="form-field"><label for="chakinTimezone">Timezone (IANA)</label><input type="text" id="chakinTimezone" placeholder="Africa/Kigali" value="Africa/Kigali"></div>
+                        <button type="submit" class="btn btn-primary">Save Chakin Settings</button>
+                        <p class="form-status" id="chakinSettingsStatus" role="status" aria-live="polite"></p>
+                    </form>
+
+                    <div class="stat-grid">
+                        <div class="stat-card"><p class="stat-label">Today's Check-ins</p><p class="stat-value" id="chakinTodayCount">0</p></div>
+                        <div class="stat-card"><p class="stat-label">Total Check-ins</p><p class="stat-value" id="chakinTotalCount">0</p></div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-heading"><h2>Check-in History</h2></div>
+                        <ul class="admin-list" id="chakinCheckinList"></ul>
+                        <div class="empty-state" id="chakinCheckinEmptyState"><p>No check-ins yet.</p></div>
+                    </div>
+                </section>
+
+                <!-- GIFT CODE SETTINGS -->
+                <section class="admin-section" data-admin-section="giftcode-settings">
+                    <h1>Gift Codes</h1>
+                    <p class="admin-subtitle">Create and manage gift codes users can redeem under Task &gt; Gift Code.</p>
+
+                    <form class="panel admin-form" id="giftCodeSettingsForm" novalidate>
+                        <div class="form-field">
+                            <label for="giftCodeCountry">Gift code applies to</label>
+                            <select id="giftCodeCountry">
+                                <option value="">All countries (shared)</option>
+                                <option value="RW">🇷🇼 Rwanda (RWF)</option>
+                                <option value="UG">🇺🇬 Uganda (UGX)</option>
+                                <option value="ZM">🇿🇲 Zambia (ZMW)</option>
+                                <option value="BI">🇧🇮 Burundi (BIF)</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="giftCodeInputAdmin">Code</label>
+                            <div class="admin-inline-field">
+                                <input type="text" id="giftCodeInputAdmin" placeholder="e.g. CP2500">
+                                <button type="button" class="btn btn-secondary btn-sm" id="generateGiftCodeBtn">Generate</button>
+                            </div>
+                        </div>
+                        <div class="form-field"><label for="giftCodeRewardAdmin">Reward Amount (RWF)</label><input type="number" id="giftCodeRewardAdmin" min="1" required></div>
+                        <div class="form-field"><label for="giftCodeMaxUsesAdmin">Total Allowed Uses</label><input type="number" id="giftCodeMaxUsesAdmin" min="1" placeholder="Unlimited if blank"></div>
+                        <div class="form-field"><label for="giftCodePerUserAdmin">Per-User Limit</label><input type="number" id="giftCodePerUserAdmin" min="1" value="1"></div>
+                        <div class="form-field"><label for="giftCodeExpiresAdmin">Expiration</label><input type="datetime-local" id="giftCodeExpiresAdmin"></div>
+                        <label class="list-action"><span>Enabled</span><input type="checkbox" id="giftCodeEnabledAdmin" checked></label>
+                        <button type="submit" class="btn btn-primary">Create Gift Code</button>
+                        <p class="form-status" id="giftCodeSettingsStatus" role="status" aria-live="polite"></p>
+                    </form>
+
+                    <div class="panel">
+                        <div class="panel-heading"><h2>Gift Codes</h2></div>
+                        <ul class="admin-list" id="giftCodeList"></ul>
+                        <div class="empty-state" id="giftCodeEmptyState"><p>No gift codes created yet.</p></div>
+                    </div>
+
+                </section>
+
+                <!-- DEPOSIT SETTINGS -->
+                <section class="admin-section" data-admin-section="deposit-settings">
+                    <h1>Deposit Settings</h1>
+                    <p class="admin-subtitle">Configure Deposit methods and merchant details shown to users.</p>
+
+                    <form class="panel admin-form" id="depositSettingsForm" novalidate>
+                        <label class="list-action">
+                            <span>Enable Deposit</span>
+                            <input type="checkbox" id="depositEnabled" checked>
+                        </label>
+
+                        <div class="panel-heading"><h2>MTN Mobile Money</h2></div>
+                        <label class="list-action">
+                            <span>Enable MTN Deposit</span>
+                            <input type="checkbox" id="depositMtnEnabled" checked>
+                        </label>
+                        <div class="form-field">
+                            <label for="depositMtnMerchantName">MTN Merchant Name</label>
+                            <input type="text" id="depositMtnMerchantName" placeholder="e.g. Merchant name">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositMtnMerchantPhone">MTN Receiving Phone Number</label>
+                            <input type="tel" id="depositMtnMerchantPhone" placeholder="e.g. 0788000000">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositMtnMerchantCode">MTN Merchant Code (for direct USSD)</label>
+                            <input type="text" id="depositMtnMerchantCode" inputmode="numeric" placeholder="Optional merchant code">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositMtnMin">MTN Minimum Amount (RWF)</label>
+                            <input type="number" id="depositMtnMin" min="0" value="6000">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositMtnMax">MTN Maximum Amount (RWF)</label>
+                            <input type="number" id="depositMtnMax" min="0" value="5000000">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositMtnInstructions">MTN Instructions</label>
+                            <textarea id="depositMtnInstructions" rows="2" placeholder="MTN payment instructions"></textarea>
+                        </div>
+                        <div class="form-field">
+                            <label for="depositMtnVerification">MTN Verification Information</label>
+                            <textarea id="depositMtnVerification" rows="2" placeholder="MTN verification requirements"></textarea>
+                        </div>
+
+                        <div class="panel-heading"><h2>Airtel Money</h2></div>
+                        <label class="list-action">
+                            <span>Enable Airtel Deposit</span>
+                            <input type="checkbox" id="depositAirtelEnabled" checked>
+                        </label>
+                        <div class="form-field">
+                            <label for="depositAirtelMerchantName">Airtel Merchant Name</label>
+                            <input type="text" id="depositAirtelMerchantName" placeholder="e.g. Merchant name">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositAirtelMerchantPhone">Airtel Receiving Phone Number</label>
+                            <input type="tel" id="depositAirtelMerchantPhone" placeholder="e.g. 0738000000">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositAirtelMerchantCode">Airtel Merchant Code (if available)</label>
+                            <input type="text" id="depositAirtelMerchantCode" inputmode="numeric" placeholder="Optional merchant code">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositAirtelMin">Airtel Minimum Amount (RWF)</label>
+                            <input type="number" id="depositAirtelMin" min="0" value="3000">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositAirtelMax">Airtel Maximum Amount (RWF)</label>
+                            <input type="number" id="depositAirtelMax" min="0" value="5000000">
+                        </div>
+                        <div class="form-field">
+                            <label for="depositAirtelInstructions">Airtel Instructions</label>
+                            <textarea id="depositAirtelInstructions" rows="2" placeholder="Airtel payment instructions"></textarea>
+                        </div>
+                        <div class="form-field">
+                            <label for="depositAirtelVerification">Airtel Verification Information</label>
+                            <textarea id="depositAirtelVerification" rows="2" placeholder="Airtel verification requirements"></textarea>
+                        </div>
+
+                        <div class="panel-heading"><h2>Instructions &amp; Verification</h2></div>
+                        <div class="form-field">
+                            <label for="depositInstructions">Deposit / USSD Instructions</label>
+                            <textarea id="depositInstructions" rows="3" placeholder="e.g. Dial *182*8*1*MERCHANT_CODE*AMOUNT# to complete payment."></textarea>
+                        </div>
+                        <label class="list-action">
+                            <span>Require Payment Proof</span>
+                            <input type="checkbox" id="depositProofRequired" checked>
+                        </label>
+
+                        <button type="submit" class="btn btn-primary">Save Deposit Settings</button>
+                        <p class="form-status" id="depositSettingsStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+
+                <!-- WITHDRAW SETTINGS -->
+                <section class="admin-section" data-admin-section="withdraw-settings">
+                    <h1>Withdraw Settings</h1>
+                    <p class="admin-subtitle">Configure Withdrawal methods, limits, fees and schedule shown to users.</p>
+
+                    <form class="panel admin-form" id="withdrawSettingsForm" novalidate>
+                        <label class="list-action">
+                            <span>Enable Withdraw</span>
+                            <input type="checkbox" id="withdrawEnabled" checked>
+                        </label>
+
+                        <div class="panel-heading"><h2>MTN Mobile Money</h2></div>
+                        <label class="list-action">
+                            <span>Enable MTN Withdrawal</span>
+                            <input type="checkbox" id="withdrawMtnEnabled" checked>
+                        </label>
+                        <div class="form-field">
+                            <label for="withdrawMtnMin">MTN Minimum Amount (RWF)</label>
+                            <input type="number" id="withdrawMtnMin" min="0" value="2000">
+                        </div>
+                        <div class="form-field">
+                            <label for="withdrawMtnMax">MTN Maximum Amount (RWF)</label>
+                            <input type="number" id="withdrawMtnMax" min="0" value="500000">
+                        </div>
+
+                        <div class="panel-heading"><h2>Airtel Money</h2></div>
+                        <label class="list-action">
+                            <span>Enable Airtel Withdrawal</span>
+                            <input type="checkbox" id="withdrawAirtelEnabled" checked>
+                        </label>
+                        <div class="form-field">
+                            <label for="withdrawAirtelMin">Airtel Minimum Amount (RWF)</label>
+                            <input type="number" id="withdrawAirtelMin" min="0" value="2000">
+                        </div>
+                        <div class="form-field">
+                            <label for="withdrawAirtelMax">Airtel Maximum Amount (RWF)</label>
+                            <input type="number" id="withdrawAirtelMax" min="0" value="500000">
+                        </div>
+
+                        <div class="panel-heading"><h2>Fees &amp; Processing</h2></div>
+                        <div class="form-field">
+                            <label for="withdrawFeePercent">Withdrawal Fee (%)</label>
+                            <input type="number" id="withdrawFeePercent" min="0" max="100" value="5">
+                        </div>
+                        <div class="form-field">
+                            <label for="withdrawProcessingMessage">Processing Message</label>
+                            <textarea id="withdrawProcessingMessage" rows="2" placeholder="e.g. Payouts are processed after approval."></textarea>
+                        </div>
+                        <label class="list-action">
+                            <span>Require Account Holder Name</span>
+                            <input type="checkbox" id="withdrawAccountHolderRequired" checked>
+                        </label>
+
+                        <div class="panel-heading"><h2>Availability</h2></div>
+                        <label class="list-action">
+                            <span>Enable Scheduled Availability</span>
+                            <input type="checkbox" id="withdrawAvailabilityEnabled" checked>
+                        </label>
+                        <div class="form-field">
+                            <label>Open Days</label>
+                            <div class="day-checkbox-list" id="withdrawDaysList">
+                                <label><input type="checkbox" value="Sunday" checked> Sun</label>
+                                <label><input type="checkbox" value="Monday" checked> Mon</label>
+                                <label><input type="checkbox" value="Tuesday" checked> Tue</label>
+                                <label><input type="checkbox" value="Wednesday" checked> Wed</label>
+                                <label><input type="checkbox" value="Thursday" checked> Thu</label>
+                                <label><input type="checkbox" value="Friday" checked> Fri</label>
+                                <label><input type="checkbox" value="Saturday" checked> Sat</label>
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label for="withdrawOpenHour">Opening Hour (0–23)</label>
+                            <input type="number" id="withdrawOpenHour" min="0" max="23" value="0">
+                        </div>
+                        <div class="form-field">
+                            <label for="withdrawCloseHour">Closing Hour (1–24)</label>
+                            <input type="number" id="withdrawCloseHour" min="1" max="24" value="24">
+                        </div>
+                        <div class="form-field">
+                            <label for="withdrawTimezoneLabel">Timezone Label</label>
+                            <input type="text" id="withdrawTimezoneLabel" value="Kigali time">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Withdraw Settings</button>
+                        <p class="form-status" id="withdrawSettingsStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+
+                <!-- SUPPORT SETTINGS -->
+                <section class="admin-section" data-admin-section="support-settings">
+                    <h1>Support Settings</h1>
+                    <p class="admin-subtitle">Configure the contact channels shown on the user Support page.</p>
+
+                    <form class="panel admin-form" id="supportSettingsForm" novalidate>
+                        <div class="form-field">
+                            <label for="supportMessageInput">Support Message</label>
+                            <textarea id="supportMessageInput" rows="2"></textarea>
+                        </div>
+
+                        <label class="list-action"><span>Enable Email</span><input type="checkbox" id="supportEmailEnabled"></label>
+                        <div class="form-field"><label for="supportEmailInput">Support Email</label><input type="email" id="supportEmailInput" placeholder="support@example.com"></div>
+
+                        <label class="list-action"><span>Enable Phone</span><input type="checkbox" id="supportPhoneEnabled"></label>
+                        <div class="form-field"><label for="supportPhoneInput">Support Phone</label><input type="text" id="supportPhoneInput" placeholder="+250 000 000 000"></div>
+
+                        <label class="list-action"><span>Enable WhatsApp</span><input type="checkbox" id="supportWhatsappEnabled"></label>
+                        <div class="form-field"><label for="supportWhatsappInput">WhatsApp Number</label><input type="text" id="supportWhatsappInput" placeholder="+250 000 000 000"></div>
+
+                        <label class="list-action"><span>Enable Telegram</span><input type="checkbox" id="supportTelegramEnabled"></label>
+                        <div class="form-field"><label for="supportTelegramLinkInput">Telegram Link</label><input type="text" id="supportTelegramLinkInput" placeholder="https://t.me/coffeeplanetsupport"></div>
+                        <div class="form-field"><label for="supportTelegramUsernameInput">Telegram Username</label><input type="text" id="supportTelegramUsernameInput" placeholder="@coffeeplanetsupport"></div>
+
+                        <div class="form-field"><label for="supportAvailabilityInput">Availability</label><input type="text" id="supportAvailabilityInput" placeholder="e.g. Mon - Fri, 8:00 - 18:00"></div>
+
+                        <button type="submit" class="btn btn-primary">Save Support Settings</button>
+                        <p class="form-status" id="supportSettingsStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+
+                <section class="admin-section" data-admin-section="country-settings">
+                    <h1>Country Settings</h1>
+                    <p class="admin-subtitle">Choose a country to manage its settings, payment methods, limits, rewards, and product plans independently. Amounts use that country's currency; no currency conversion is applied.</p>
+                    <form class="panel admin-form" id="countrySettingsForm" novalidate>
+                        <div class="form-field">
+                            <label for="countrySettingsCountry">Country</label>
+                            <select id="countrySettingsCountry" required></select>
+                        </div>
+                        <label class="list-action"><span>Accept new registrations and serve this country</span><input type="checkbox" id="countrySettingsEnabled"></label>
+                        <div id="countryFinancialSettings" class="country-settings-fields"></div>
+                        <div class="country-settings-products">
+                            <div class="panel-heading">
+                                <h2>Products and plans</h2>
+                                <span id="countrySettingsCurrency" class="country-currency-badge"></span>
+                            </div>
+                            <p class="admin-subtitle">Create product names and shared details in Products. Set this country's price, stock, plan duration, daily income, total return, and availability here.</p>
+                            <div class="admin-data-table-wrap">
+                                <table class="admin-data-table country-product-table">
+                                    <thead>
+                                        <tr><th>Product</th><th>Price (<span data-country-currency></span>)</th><th>Stock</th><th>Total slots</th><th>Duration (days)</th><th>Daily income (<span data-country-currency></span>)</th><th>Daily income (%)</th><th>Total return (<span data-country-currency></span>)</th><th>Status</th><th>Enabled</th></tr>
+                                    </thead>
+                                    <tbody id="countryProductSettingsBody"></tbody>
+                                </table>
+                            </div>
+                            <p class="empty-state-hint" id="countryProductsEmpty" hidden>No products exist yet. Add products from the Products section first.</p>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Country Settings</button>
+                        <p class="form-status" id="countrySettingsStatus" role="status" aria-live="polite"></p>
+                    </form>
+                    <form class="panel admin-form country-add-product-form" id="countryAddProductForm" novalidate>
+                        <div class="panel-heading"><h2>Add Product to <span id="countryAddProductName">selected country</span></h2></div>
+                        <p class="admin-subtitle">This product starts enabled only for the selected country. Its prices, stock, and plan amounts can then be managed independently above.</p>
+                        <div class="product-form-grid">
+                            <div class="form-field"><label for="countryNewProductName">Product Name</label><input type="text" id="countryNewProductName" required></div>
+                            <div class="form-field"><label for="countryNewProductCategory">Category</label><input type="text" id="countryNewProductCategory" required></div>
+                            <div class="form-field"><label for="countryNewProductPrice">Price (<span data-country-currency></span>)</label><input type="number" id="countryNewProductPrice" min="0" step="1" required></div>
+                            <div class="form-field"><label for="countryNewProductStock">Available Slots</label><input type="number" id="countryNewProductStock" min="0" step="1" value="0" required></div>
+                            <div class="form-field"><label for="countryNewProductTotalSlots">Total Slots</label><input type="number" id="countryNewProductTotalSlots" min="1" step="1" value="1000" required></div>
+                            <div class="form-field"><label for="countryNewProductDuration">Plan Duration (days)</label><input type="number" id="countryNewProductDuration" min="0" step="1" value="0" required></div>
+                            <div class="form-field"><label for="countryNewProductDailyIncome">Daily Income (<span data-country-currency></span>)</label><input type="number" id="countryNewProductDailyIncome" min="0" step="1" value="0" required></div>
+                            <div class="form-field"><label for="countryNewProductDailyPercent">Daily Income (%)</label><input type="number" id="countryNewProductDailyPercent" min="0" max="100" step="0.01" value="0" required></div>
+                            <div class="form-field"><label for="countryNewProductTotalIncome">Total Return (<span data-country-currency></span>)</label><input type="number" id="countryNewProductTotalIncome" min="0" step="1" value="0" required></div>
+                            <div class="form-field"><label for="countryNewProductStatus">Product Status</label><select id="countryNewProductStatus"><option value="active">Available</option><option value="sold_out">Sold Out</option><option value="open_soon">Open Soon</option><option value="inactive">Hidden</option></select></div>
+                            <div class="form-field product-form-wide"><label for="countryNewProductImage">Product Image URL</label><input type="url" id="countryNewProductImage" placeholder="https://example.com/product.jpg"></div>
+                            <div class="form-field product-form-wide"><label for="countryNewProductDescription">Description</label><textarea id="countryNewProductDescription" rows="3"></textarea></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Product to Country</button>
+                        <p class="form-status" id="countryAddProductStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+
+                <section class="admin-section" data-admin-section="user-access">
+                    <h1>User Access</h1>
+                    <p class="admin-subtitle">Search regular accounts and grant admin access when authorized. Every change is recorded in the audit log.</p>
+                    <form class="panel admin-form" id="userAccessSearchForm">
+                        <div class="form-field">
+                            <label for="userAccessSearch">Search by name, phone, or referral code</label>
+                            <input type="search" id="userAccessSearch" maxlength="100" autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Search Users</button>
+                        <p class="form-status" id="userAccessStatus" role="status" aria-live="polite"></p>
+                    </form>
+                    <div class="panel">
+                        <ul class="admin-list" id="userAccessList"></ul>
+                    </div>
+                </section>
+
+                <!-- HOME PAGE SETTINGS -->
+                <section class="admin-section" data-admin-section="home-settings">
+                    <h1>Home Page</h1>
+                    <p class="admin-subtitle">Manage the About section and rotating photos shown on the user Home page.</p>
+                    <form class="panel admin-form" id="coffeePlanetSettingsForm" novalidate>
+                        <div class="panel-heading"><h2>Home Page Settings</h2></div>
+                        <p class="form-note">Manage the home-page About section and five rotating photos. Only admin accounts can save these settings.</p>
+                        <div class="form-field"><label for="coffeePlanetTitleInput">Home title</label><input type="text" id="coffeePlanetTitleInput" maxlength="100" value="Home"></div>
+                        <div class="form-field"><label for="coffeePlanetSubtitleInput">Service prompt</label><input type="text" id="coffeePlanetSubtitleInput" maxlength="160" value="Select a service to get started"></div>
+                        <div class="form-field"><label for="coffeePlanetAboutTitleInput">About heading</label><input type="text" id="coffeePlanetAboutTitleInput" maxlength="100" value="About Us"></div>
+                        <div class="form-field"><label for="coffeePlanetAboutTextInput">About text (separate paragraphs with a blank line)</label><textarea id="coffeePlanetAboutTextInput" rows="6" maxlength="3000">We connect our members with carefully selected products and offer clear account tools to manage their activity.
+
+Members can track their plans, invite friends, and review available tasks and account transactions from one place.</textarea></div>
+                        <div class="panel-heading"><h2>Rotating photos (up to 5)</h2></div>
+                        <div id="coffeePlanetImages" class="coffee-planet-images"></div>
+                        <button type="button" class="btn btn-secondary btn-sm" id="addCoffeePlanetImageBtn">+ Add photo</button>
+                        <button type="submit" class="btn btn-primary">Save Home Page</button>
+                        <p class="form-status" id="coffeePlanetSettingsStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+
+                <!-- RULES & SETTINGS -->
+                <section class="admin-section" data-admin-section="rules-settings">
+                    <h1>Rules &amp; Settings</h1>
+                    <p class="admin-subtitle">Configure bonus, withdrawal and investment rules used by the backend.</p>
+
+                    <form class="panel admin-form rules-settings-form" id="welcomeBonusSettingsForm" novalidate>
+                        <div class="panel-heading"><h2>Welcome Bonus</h2></div>
+                        <label class="list-action"><span>Enable Welcome Bonus</span><input type="checkbox" id="welcomeBonusEnabled"></label>
+                        <div class="form-field"><label for="welcomeBonusType">Bonus Type</label><select id="welcomeBonusType"><option value="fixed">Fixed amount</option><option value="percentage">Percentage</option></select></div>
+                        <div class="form-field"><label for="welcomeBonusAmount">Bonus Amount / Percentage</label><input type="number" id="welcomeBonusAmount" min="0" step="0.01"></div>
+                        <div class="form-field"><label for="welcomeBonusMinimumDeposit">Minimum Deposit Required (RWF)</label><input type="number" id="welcomeBonusMinimumDeposit" min="0" step="1"></div>
+                        <label class="list-action"><span>Deposit required before unlock</span><input type="checkbox" id="welcomeBonusDepositRequired"></label>
+                        <label class="list-action"><span>Product purchase required before withdrawal</span><input type="checkbox" id="welcomeBonusProductRequired"></label>
+                        <label class="list-action"><span>Bonus is withdrawable after requirements</span><input type="checkbox" id="welcomeBonusWithdrawable"></label>
+                        <div class="form-field"><label for="welcomeBonusExpiryDays">Expiry (days, 0 = none)</label><input type="number" id="welcomeBonusExpiryDays" min="0" step="1"></div>
+                        <button type="submit" class="btn btn-primary">Save Welcome Bonus</button><p class="form-status" id="welcomeBonusSettingsStatus" role="status" aria-live="polite"></p>
+                    </form>
+
+                    <form class="panel admin-form rules-settings-form" id="investmentSettingsForm" novalidate>
+                        <div class="panel-heading"><h2>Investment / Deposit Rules</h2></div>
+                        <label class="list-action"><span>Enable investment options</span><input type="checkbox" id="investmentEnabled"></label>
+                        <div class="form-field"><label for="investmentMinimumAmount">Minimum Amount (RWF)</label><input type="number" id="investmentMinimumAmount" min="0"></div>
+                        <div class="form-field"><label for="investmentMaximumAmount">Maximum Amount (RWF)</label><input type="number" id="investmentMaximumAmount" min="0"></div>
+                        <div class="form-field"><label for="investmentAvailableAmounts">Available Amounts (comma separated)</label><input type="text" id="investmentAvailableAmounts" placeholder="10000, 25000, 50000"></div>
+                        <div class="form-field"><label for="investmentDurationDays">Duration (days)</label><input type="number" id="investmentDurationDays" min="0"></div>
+                        <div class="form-field"><label for="investmentDailyRatePercent">Daily Income Rate (%)</label><input type="number" id="investmentDailyRatePercent" min="0" max="100" step="0.01"></div>
+                        <button type="submit" class="btn btn-primary">Save Investment Rules</button><p class="form-status" id="investmentSettingsStatus" role="status" aria-live="polite"></p>
+                    </form>
+
+                    <form class="panel admin-form rules-settings-form" id="withdrawalRulesForm" novalidate>
+                        <div class="panel-heading"><h2>Withdrawal Rules</h2></div>
+                        <label class="list-action"><span>Enable withdrawals</span><input type="checkbox" id="rulesWithdrawEnabled"></label>
+                        <div class="form-field"><label for="rulesWithdrawFeePercent">Fee (%)</label><input type="number" id="rulesWithdrawFeePercent" min="0" max="100" step="0.01"></div>
+                        <div class="form-field"><label for="rulesWithdrawMinimum">Minimum Withdrawal (RWF)</label><input type="number" id="rulesWithdrawMinimum" min="0"></div>
+                        <div class="form-field"><label for="rulesWithdrawMaximum">Maximum Withdrawal (RWF)</label><input type="number" id="rulesWithdrawMaximum" min="0"></div>
+                        <div class="form-field"><label for="rulesWithdrawBalance">Minimum Remaining Balance (RWF)</label><input type="number" id="rulesWithdrawBalance" min="0"></div>
+                        <button type="submit" class="btn btn-primary">Save Withdrawal Rules</button><p class="form-status" id="withdrawalRulesStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+
+                <!-- AUDIT LOG -->
+                <section class="admin-section" data-admin-section="audit-log">
+                    <h1>Audit Log</h1>
+                    <p class="admin-subtitle">Traceable record of every sensitive admin action.</p>
+                    <div class="panel">
+                        <ul class="admin-list" id="auditLogList"></ul>
+                        <div class="empty-state" id="auditLogEmptyState">
+                            <p>No audit log entries yet.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <div class="admin-modal" id="userDetailModal" hidden>
+        <div class="admin-modal-dialog user-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="userDetailTitle">
+            <div class="panel-heading"><h2 id="userDetailTitle">User details</h2><button type="button" class="btn btn-secondary btn-sm" data-close-user-detail>Close</button></div>
+            <div id="userDetailContent"></div>
+        </div>
+    </div>
+
+    <div class="admin-modal" id="userEditModal" hidden>
+        <form class="admin-modal-dialog admin-form" id="userEditForm" role="dialog" aria-modal="true" aria-labelledby="userEditTitle" novalidate>
+            <div class="panel-heading"><h2 id="userEditTitle">Edit user</h2><button type="button" class="btn btn-secondary btn-sm" data-close-user-edit>Close</button></div>
+            <input type="hidden" id="userEditId">
+            <div class="form-field"><label for="userEditName">Full name</label><input type="text" id="userEditName" maxlength="100" required></div>
+            <div class="form-field"><label for="userEditPhone">Phone number</label><input type="tel" id="userEditPhone" maxlength="20" required></div>
+            <p class="form-note" id="userEditCountryNote"></p>
+            <p class="form-status" id="userEditStatus" role="status" aria-live="polite"></p>
+            <div class="admin-modal-actions">
+                <button type="button" class="btn btn-secondary" data-close-user-edit>Cancel</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="admin-modal" id="formModal" hidden>
+        <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
+            <div class="panel-heading"><h2 id="formModalTitle">Promoter Controls</h2></div>
+            <div id="formModalFields"></div>
+            <p class="form-status error" id="formModalError" role="alert"></p>
+            <div class="admin-modal-actions">
+                <button type="button" class="btn btn-secondary" id="formModalCancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="formModalSave">Save Controls</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-modal" id="confirmModal" hidden>
+        <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+            <div class="panel-heading"><h2 id="confirmModalTitle">Confirm action</h2></div>
+            <p class="panel-description" id="confirmModalMessage"></p>
+            <div class="form-field" id="confirmReasonField" hidden>
+                <label for="confirmModalReason">Reason</label>
+                <textarea id="confirmModalReason" rows="3"></textarea>
+            </div>
+            <p class="form-status error" id="confirmModalError" role="alert"></p>
+            <div class="admin-modal-actions">
+                <button type="button" class="btn btn-secondary" id="confirmModalCancel">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmModalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="notification-client.js"></script>
+    <script src="admin.js?v=admin-users-v3"></script>
+</body>
+</html>

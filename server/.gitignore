@@ -1,0 +1,5 @@
+node_modules/
+.env
+bmg.sqlite
+bmg.sqlite-shm
+bmg.sqlite-wal

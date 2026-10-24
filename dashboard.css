@@ -1,0 +1,766 @@
+/* Mobile-first user dashboard: bottom nav + swappable views. */
+.dashboard-body { background: var(--color-bg); padding-bottom: 84px; }
+
+.dash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 5vw;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-body.home-active .dash-header { display: none; }
+
+.dash-main { width: 100%; min-width: 0; max-width: 720px; margin: 0 auto; padding: 20px 5vw 40px; }
+.dash-main h1 { margin: 0 0 16px; }
+
+.home-profile-header { display: flex; align-items: center; gap: 12px; margin: -4px 0 14px; }
+.home-brand-mark, .home-avatar { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 18px; background: #347b87; color: #fff; font-weight: 800; }
+.home-avatar { width: 52px; height: 52px; border-radius: 50%; background: #386f7e; font-size: 1.35rem; }
+.home-welcome { flex: 1; min-width: 0; }
+.home-welcome span, .home-welcome strong { display: block; }
+.home-welcome span { color: var(--color-text-muted); font-size: 0.95rem; }
+.home-welcome strong { margin-top: 2px; color: var(--color-text); font-size: 1.35rem; }
+.home-support-button { display: grid; place-items: center; width: 52px; height: 52px; border: 1px solid var(--color-border); border-radius: 50%; background: var(--color-surface); color: var(--color-primary-dark); font-size: 1.45rem; cursor: pointer; }
+
+.dash-card, .balance-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 18px;
+}
+
+.balance-card h1 { margin: 4px 0 16px; }
+.balance-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.balance-heading { display: flex; align-items: center; gap: 14px; }
+.balance-heading h1 { flex: 1; margin: 0; font-size: 1.4rem; letter-spacing: 0.04em; }
+.balance-icon { display: grid; place-items: center; width: 58px; height: 58px; border: 1px solid #c4e2f5; border-radius: 16px; background: #e1f2ff; color: #2b5372; font-weight: 700; font-size: 1.65rem; }
+.balance-eye { color: var(--color-text-muted); font-size: 1.5rem; }
+.balance-value { margin: 18px 0 4px; font-size: clamp(2.4rem, 10vw, 4rem); font-weight: 800; line-height: 1; }
+.balance-card { min-height: 155px; padding: 20px; background: linear-gradient(120deg, #ffffff 0%, #eaf6ff 100%); border: 1px solid #b8dced; }
+.balance-card { position: relative; overflow: hidden; }
+.balance-number { display: flex; align-items: baseline; gap: 10px; margin-top: 16px; }
+.balance-number > span { color: #58718d; font-size: clamp(1.15rem, 4vw, 1.8rem); font-weight: 800; }
+.balance-number > strong { position: relative; z-index: 1; color: #0b223f; font-size: clamp(1.9rem, 8vw, 3rem); font-weight: 850; line-height: 1; }
+.balance-watermark { position: absolute; right: 18px; bottom: -8px; color: rgba(71, 143, 171, 0.14); font-size: clamp(4.5rem, 22vw, 8rem); font-weight: 900; line-height: 1; transform: rotate(-4deg); }
+.balance-watermark { display: inline-flex; align-items: center; gap: 0; }
+.balance-watermark i { display: block; width: 80px; height: 34px; margin-right: -34px; border: 5px solid rgba(0, 151, 221, 0.12); border-right-color: rgba(239, 31, 50, 0.12); border-radius: 50%; transform: rotate(24deg); }
+
+.home-action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.home-action-card { position: relative; min-height: 138px; padding: 13px 28px 13px 16px; border: 1px solid var(--color-border); border-top: 4px solid var(--color-primary); border-radius: 14px; background: var(--color-surface); color: var(--color-text); text-align: left; box-shadow: var(--shadow-soft); cursor: pointer; }
+.home-action-card strong, .home-action-card span { display: block; }
+.home-action-card strong { margin-bottom: 5px; color: #173b61; font-size: 1rem; }
+.home-action-card span { color: var(--color-text-muted); line-height: 1.25; }
+.home-action-card b { position: absolute; right: 12px; top: 50%; color: var(--color-primary-dark); }
+.home-action-icon { display: grid !important; place-items: center; width: 48px; height: 48px; margin-bottom: 9px; border-radius: 50%; background: #e8f4f8; color: var(--color-primary-dark); font-size: 1.55rem; font-weight: 700; }
+.home-action-watermark { position: absolute; right: 7px; bottom: 3px; color: rgba(52, 123, 135, 0.08); font-size: 2.2rem; font-weight: 900; letter-spacing: 0.04em; transform: rotate(-8deg); pointer-events: none; }
+.action-withdraw { border-top-color: #61a98d; }
+.action-support { border-top-color: #9a8dbb; }
+.action-product { border-top-color: #62a5ae; }
+.action-gift { border-top-color: #8da8c1; }
+
+.home-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.home-summary-card { min-width: 0; padding: 14px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-soft); }
+.home-summary-card span, .home-summary-card strong { display: block; }
+.home-summary-card span { margin-bottom: 6px; color: var(--color-text-muted); font-size: 0.75rem; }
+.home-summary-card strong { overflow: hidden; color: var(--color-text); font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
+
+.activity-ticker { width: 100%; max-width: 100%; overflow: hidden; padding: 14px 0; white-space: nowrap; }
+.activity-track { display: inline-flex; gap: 36px; min-width: max-content; padding-left: 20px; animation: activity-slide 24s linear infinite; }
+.activity-track span { color: var(--color-text-muted); }
+.activity-track strong { color: #2d8062; }
+@keyframes activity-slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.home-section-heading { margin: 30px 0 10px; }
+.home-section-heading .eyebrow { margin-bottom: 6px; }
+.home-section-heading h2 { margin: 0; }
+.telegram-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+.support-channels { display: grid; gap: 10px; margin-bottom: 18px; }
+.support-channel-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); color: var(--color-text); box-shadow: var(--shadow-soft); text-decoration: none; }
+.support-channel-icon { display: grid; flex: 0 0 34px; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--color-primary); color: #fff; font-size: 1.1rem; }
+.support-channel-copy { display: grid; min-width: 0; gap: 3px; flex: 1; }
+.support-channel-copy strong { font-size: 0.95rem; }
+.support-channel-copy small { overflow: hidden; color: var(--color-text-muted); font-size: 0.82rem; text-overflow: ellipsis; white-space: nowrap; }
+.support-channel-arrow { color: var(--color-primary-dark); font-size: 1.4rem; }
+.support-channel-disabled { opacity: 0.62; cursor: default; }
+.support-channel-disabled .support-channel-icon { background: var(--color-text-muted); }
+.telegram-card h2 { flex: 1; margin: 0; font-size: 1.05rem; }
+.telegram-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: #dff2ff; color: #238bbb; font-size: 1.55rem; }
+
+.btn-small { padding: 8px 16px; font-size: 0.9rem; }
+
+.sponsors-showcase { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.sponsor-reference-banner { display: block; width: 100%; max-height: 142px; margin-bottom: 10px; border: 1px solid var(--color-border); border-radius: 12px; object-fit: cover; object-position: center; box-shadow: var(--shadow-soft); }
+.sponsor-card { position: relative; display: grid; place-items: center; gap: 3px; min-width: 0; min-height: 92px; padding: 8px 6px; border: 1px solid var(--color-border); border-top: 3px solid var(--color-primary); border-radius: 10px; background: var(--color-surface); text-align: center; transition: transform 180ms ease, box-shadow 180ms ease; }
+.sponsor-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: var(--shadow-soft); }
+.sponsor-card img, .sponsor-initials { display: grid; place-items: center; width: 62px; height: 38px; border-radius: 7px; object-fit: cover; background: #e7f0f4; color: var(--color-primary-dark); font-size: 0.78rem; font-weight: 800; }
+.sponsor-card strong { max-width: 100%; overflow: hidden; font-size: 0.68rem; text-overflow: ellipsis; white-space: nowrap; }
+.sponsor-card small, .sponsor-card em { max-width: 100%; overflow: hidden; color: var(--color-text-muted); font-size: 0.64rem; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.sponsor-card em { color: var(--color-primary-dark); font-weight: 700; }
+.sponsor-featured { grid-column: span 2; min-height: 150px; border-top-color: #d3a62d; background: linear-gradient(135deg, #eff8ff, #fff9e8); }
+.sponsor-featured img { width: 100%; height: 118px; border-radius: 8px; object-fit: cover; object-position: center; }
+.sponsor-image-wrap { position: relative; display: block; width: 100%; }
+.sponsor-image-wrap::after { content: ''; position: absolute; top: 29%; left: 27%; width: 48%; height: 13%; border-radius: 4px; background: rgba(8, 67, 145, 0.96); pointer-events: none; }
+.sponsor-featured .sponsor-initials { width: 70px; height: 43px; }
+.sponsors-branding-line, .sponsors-branding-tagline { text-align: center; color: var(--color-text-muted); font-size: 0.67rem; }
+.sponsors-branding-line { margin-top: 14px; }
+.sponsors-branding-tagline { margin-top: 4px; color: var(--color-primary-dark); font-weight: 700; }
+
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+.product-card { overflow: hidden; border: 1px solid #d6d9dd; border-radius: 14px; background: #363b45; box-shadow: 0 8px 18px rgba(31, 41, 51, 0.14); }
+.product-card-heading { padding: 16px 22px; background: #73777d; color: #fff; font-size: 1.15rem; font-weight: 800; text-transform: uppercase; }
+.product-card-image { height: 190px; display: grid; place-items: center; overflow: hidden; background: #dce4e8; color: #66717a; }
+.product-card-image img { width: 100%; height: 100%; object-fit: cover; }
+.product-image-fallback { display: grid; place-items: center; width: 100%; height: 100%; background: #dce4e8; color: #356477; font-size: 2rem; font-weight: 800; }
+.product-card-details { padding: 14px 22px 16px; color: #dce0e5; }
+.product-card-details p { display: flex; justify-content: space-between; gap: 14px; margin: 0 0 9px; font-size: 0.98rem; }
+.product-card-details p:last-child { margin-bottom: 0; }
+.product-card-details strong { color: #fff; text-align: right; }
+.product-buy-button { width: 100%; border: 0; padding: 15px 18px; background: #6b432b; color: #fff; font-size: 1.05rem; font-weight: 800; cursor: pointer; }
+.product-buy-button:hover:not(:disabled) { filter: brightness(.9); }
+.product-buy-button:disabled { background: #5d656d !important; cursor: not-allowed; }
+.product-buy-button.product-status-sold_out { background: #5d656d !important; }
+.product-buy-button.product-status-open_soon { background: #a56a16 !important; }
+.product-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.product-page-heading h1 { margin: 0; }
+.add-product-button { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; background: #6b432b; color: #fff; font-size: 1.45rem; line-height: 1; cursor: pointer; }
+.add-product-button:hover { background: #54351f; }
+.purchased-products-grid { display: grid; gap: 8px; }
+.purchased-product-row { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 10px 0; border-bottom: 1px solid var(--color-border); }
+.purchased-product-row:last-child { border-bottom: 0; }
+.purchased-product-row span { color: var(--color-primary-dark); font-weight: 700; }
+.purchased-product-row small { grid-column: 1 / -1; color: var(--color-text-muted); font-size: 0.75rem; }
+.active-product-card { padding: 14px 16px; background: #0d2340; color: #f7fbff; border: 1px solid #1f4b78; }
+.active-product-card .eyebrow { margin: 0 0 5px; color: #a9d5ff; font-size: 0.68rem; }
+.active-product-card h2 { margin: 0 0 8px; color: #ffffff; font-size: 1.05rem; }
+.active-product-card p { margin: 0; color: #d9edff; font-size: 0.78rem; }
+.active-product-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 14px; margin-bottom: 8px; }
+.active-product-metrics p { display: flex; justify-content: space-between; gap: 8px; }
+.active-product-card strong { color: #ffffff; font-weight: 800; }
+.active-product-progress { height: 6px; margin-top: 6px; overflow: hidden; border-radius: 999px; background: #284a6d; }
+.active-product-progress span { display: block; height: 100%; width: 0; border-radius: inherit; background: #79c8ff; transition: width 180ms ease; }
+
+.history-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+.history-item:last-child { border-bottom: 0; }
+.history-item p { margin: 4px 0 0; color: var(--color-text-muted); font-size: 0.85rem; }
+.history-item small { display: block; margin-top: 4px; color: var(--color-text-muted); font-size: 0.72rem; text-align: right; }
+.history-amount { white-space: nowrap; font-weight: 700; }
+.history-amount.credit { color: #2d8062; }
+.history-amount.debit { color: var(--color-text-muted); }
+.task-description { margin: -4px 0 12px; color: var(--color-text-muted); font-size: 0.85rem; }
+.preference-toggle { display: flex; align-items: center; gap: 10px; color: var(--color-text-muted); }
+.me-page-heading, .history-page-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.me-page-heading h1, .history-page-heading h1 { margin: 0; }
+.me-page-heading span, .history-page-heading span { color: var(--color-text-muted); font-size: 0.85rem; }
+.me-page-heading > div:last-child, .history-page-heading { flex: 1; }
+.me-avatar-large { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 20px; background: linear-gradient(135deg, #347b87, #386f7e); color: #fff; font-size: 1.5rem; font-weight: 800; box-shadow: 0 8px 18px rgba(52, 123, 135, 0.2); }
+#view-me .dash-card { border-top: 3px solid #dce7eb; }
+#view-me .me-profile-card { border-top-color: #5a9eb0; }
+#view-me .me-announcements-card { border-top-color: #d5ad4f; }
+#view-me .me-settings-card { border-top-color: #7c8fd0; }
+#view-me .me-notifications-card { border-top-color: #5da789; }
+#view-me .me-bonus-card { border-top-color: #d7a631; background: #fffaf0; }
+#view-me .me-security-card { border-top-color: #b57383; }
+#view-me .me-profile-card strong { color: var(--color-primary-dark); }
+#view-me .me-bonus-card strong { color: #ffe08a; }
+#view-me #logoutBtn { margin-top: 10px; }
+.history-page-heading { display: block; }
+.history-page-heading .eyebrow { margin-bottom: 4px; }
+.history-page-heading span { display: block; margin-top: 3px; }
+.history-filters { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
+.history-filter { flex: 0 0 auto; border: 1px solid var(--color-border); border-radius: 999px; padding: 8px 12px; background: var(--color-surface); color: var(--color-text-muted); cursor: pointer; }
+.history-filter.active { background: var(--color-primary); color: #fff; }
+.history-page-heading { margin-bottom: 10px; }
+#view-history .history-filters { gap: 5px; margin-bottom: 8px; }
+#view-history .history-filter { padding: 6px 10px; font-size: 0.76rem; }
+#view-history #historyList { padding: 10px 14px; margin-bottom: 12px; }
+#view-history .history-item { gap: 10px; padding: 8px 0; }
+#view-history .history-item p { margin-top: 2px; font-size: 0.76rem; }
+#view-history .history-amount { font-size: 0.78rem; }
+#view-history .history-item small { margin-top: 2px; font-size: 0.64rem; }
+
+.payment-section-title { margin: 8px 0 10px; color: var(--color-text-muted); font-size: 1.1rem; font-weight: 700; letter-spacing: 0.04em; }
+.payment-method-list { display: grid; gap: 12px; margin-bottom: 18px; }
+.payment-method-card { display: flex; align-items: center; gap: 16px; width: 100%; padding: 18px 20px; border: 2px solid #dfe3e6; border-radius: 16px; background: var(--color-surface); color: var(--color-text); text-align: left; cursor: pointer; }
+.payment-method-card.selected { border-color: #b12b38; background: #fff7f8; }
+.payment-method-card .method-letter { display: grid; place-items: center; width: 58px; height: 58px; border-radius: 16px; background: #edf1f3; font-size: 1.35rem; font-weight: 800; }
+.payment-method-card > span:nth-child(2) { display: grid; gap: 4px; flex: 1; }
+.payment-method-card small { color: var(--color-text-muted); font-size: 0.9rem; }
+.payment-method-card > b { color: var(--color-text-muted); font-size: 1.5rem; }
+.visually-hidden-select { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.payment-amount-field { margin-bottom: 20px; }
+.payment-details-card, .payout-account-card, .withdraw-balance-card, .withdraw-availability { margin-bottom: 18px; padding: 20px; border: 1px solid #dfe3e6; border-radius: 16px; background: var(--color-surface); box-shadow: var(--shadow-soft); }
+.payment-details-card h2, .payout-account-card h2, .withdraw-balance-card h2 { margin: 0 0 16px; font-size: 1.05rem; }
+.details-icon { margin-right: 8px; color: #b12b38; }
+.copy-detail-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 0; padding: 14px 16px; border: 1px solid #d5d9dd; border-radius: 12px; background: #f0f4f7; }
+.copy-detail-row span { display: grid; gap: 4px; }
+.copy-detail-row small { color: var(--color-text-muted); }
+.copy-detail-row strong { font-size: 1.05rem; }
+.copy-detail-button { border: 0; border-radius: 999px; padding: 10px 18px; background: #f1c34e; color: #1f2933; font-weight: 700; cursor: pointer; }
+.pay-now-button { width: 100%; margin-top: 14px; padding: 17px; border: 0; border-radius: 999px; background: #f1c34e; color: #34280f; font-size: 1.05rem; font-weight: 800; cursor: pointer; }
+.withdraw-balance-card strong { display: block; padding: 16px; border: 1px solid #dfe3e6; border-radius: 14px; color: #cc2633; font-size: 1.8rem; }
+.withdraw-balance-card p, .withdraw-availability { color: var(--color-text-muted); }
+.withdraw-calculation { display: flex; justify-content: space-between; gap: 12px; margin: -2px 0 18px; color: var(--color-text-muted); }
+.withdraw-calculation strong { color: var(--color-text); }
+.withdraw-rules { margin: 10px 0 18px; color: var(--color-text-muted); }
+.withdraw-rules ol { margin: 0; padding-left: 24px; }
+.withdraw-rules li { margin: 8px 0; }
+.withdrawal-submit-card { padding: 0; background: transparent; box-shadow: none; border: 0; }
+.withdrawal-submit-card .btn { min-height: 58px; background: #e20f1b; font-weight: 800; }
+.form-field small { display: block; margin-top: 6px; color: var(--color-text-muted); }
+
+#view-withdraw { --withdraw-bg: #081d36; --withdraw-panel: #102d4d; --withdraw-border: #2d5b83; --withdraw-text: #f7fbff; --withdraw-muted: #c5d8e9; padding: 18px; border-radius: 20px; background: var(--withdraw-bg); color: var(--withdraw-text); }
+#view-withdraw .withdraw-balance-card, #view-withdraw .withdraw-availability, #view-withdraw .form-field, #view-withdraw .withdraw-rules, #view-withdraw .withdrawal-submit-card { color: var(--withdraw-text); }
+#view-withdraw .withdraw-balance-card, #view-withdraw .withdraw-availability { border-color: var(--withdraw-border); background: var(--withdraw-panel); box-shadow: none; }
+#view-withdraw .withdraw-balance-card h2, #view-withdraw label { color: var(--withdraw-text); }
+#view-withdraw .withdraw-balance-card strong { border-color: var(--withdraw-border); background: #173b61; color: #ffffff; }
+#view-withdraw .withdraw-balance-card p, #view-withdraw .withdraw-availability, #view-withdraw .withdraw-rules { color: var(--withdraw-muted); }
+#view-withdraw .withdraw-method-removed-note { margin: 4px 0 16px; color: #9fc8e8; font-size: 0.78rem; }
+#view-withdraw input { border-color: var(--withdraw-border); background: #f5f8fb; color: #172333; }
+#view-withdraw .withdraw-calculation { color: var(--withdraw-muted); }
+#view-withdraw .withdraw-calculation strong { color: #ffffff; }
+#view-withdraw .withdrawal-submit-card { background: transparent; }
+#view-withdraw .withdraw-status, #view-withdraw .form-status { color: var(--withdraw-muted); }
+.bound-account-panel { margin: 0 0 18px; padding: 20px; border: 1px solid var(--withdraw-border); border-radius: 16px; background: var(--withdraw-panel); }
+.bound-account-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.bound-account-heading h2 { margin: 3px 0 0; color: var(--withdraw-text); font-size: 1.12rem; }
+.bound-account-panel .eyebrow { margin: 0; color: #76c7dd; font-size: .68rem; font-weight: 800; letter-spacing: .08em; }
+.bound-account-panel > p { margin: 12px 0 0; color: var(--withdraw-muted); }
+#withdrawAccountDetails { overflow-wrap: anywhere; }
+.bind-account-form { display: grid; gap: 14px; margin-top: 18px; }
+.provider-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.provider-option { min-height: 50px; border: 1px solid var(--withdraw-border); border-radius: 12px; background: #0b243e; color: var(--withdraw-text); font-size: 1rem; font-weight: 800; cursor: pointer; }
+.provider-option.is-selected { border-color: #2f9fba; background: #2f7d92; color: #fff; }
+.bound-account-panel .form-field { margin: 0; }
+.bound-account-panel .btn-primary { min-height: 54px; background: #2f7d92; }
+.bound-account-panel .btn-primary:hover { background: #246a7c; }
+#view-withdraw .withdrawal-submit-card .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.task-card { margin-bottom: 30px; padding: 40px 40px 34px; border: 1px solid var(--color-border); border-radius: 28px; background: var(--color-surface); box-shadow: var(--shadow-soft); }
+.task-card .task-icon { display: grid; place-items: center; width: 96px; height: 96px; margin-bottom: 28px; border-radius: 50%; font-size: 2.4rem; font-weight: 700; }
+.task-card h2 { margin: 0 0 22px; font-size: 1.65rem; }
+.task-card p { color: var(--color-text-muted); font-size: 1.05rem; }
+.task-card .task-description { margin-bottom: 14px; }
+.task-card .form-field { margin: 12px 0; }
+.task-card .btn { min-height: 52px; width: 100%; font-size: 1rem; font-weight: 700; }
+.task-card-chakin .task-icon { background: #d7f4e2; color: #27815c; }
+.task-card-gift .task-icon { background: #ffedb5; color: #a56b00; }
+.task-card-spin .task-icon { background: #ffd9ce; color: #bd4d30; }
+.task-card-chakin .btn { background: #27865d; }
+.task-card-gift .btn { background: #ad7200; }
+.task-card-spin .btn { background: #bd3d22; }
+.spin-wheel-wrap { display: grid; place-items: center; margin: 18px 0; }
+.spin-wheel { position: relative; width: 220px; height: 220px; border: 9px solid #f7fbff; border-radius: 50%; box-shadow: 0 8px 18px rgba(0,0,0,0.24); transition: transform 2.6s cubic-bezier(0.12, 0.8, 0.18, 1); }
+.spin-wheel-pointer { position: absolute; z-index: 2; top: -20px; left: 50%; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 26px solid #e20f1b; transform: translateX(-50%); }
+.spin-wheel-center { position: absolute; z-index: 2; top: 50%; left: 50%; display: grid; place-items: center; width: 58px; height: 58px; border: 5px solid #f7fbff; border-radius: 50%; background: #102d4d; color: #fff; font-size: 0.68rem; font-weight: 800; transform: translate(-50%, -50%); }
+.spin-wheel-label { position: absolute; top: 50%; left: 50%; width: 68px; margin-left: -34px; color: #fff; font-size: 0.62rem; font-weight: 800; text-align: center; text-shadow: 0 1px 2px rgba(0,0,0,0.5); transform-origin: 50% 78px; }
+#view-task { padding: 12px; border-radius: 16px; background: #eef2f4; color: #273542; }
+#view-task .task-card { border-color: #d8e0e5; background: #ffffff; box-shadow: 0 8px 20px rgba(31, 41, 51, 0.1); }
+#view-task .task-card h2 { color: #273542; }
+#view-task .task-card p, #view-task .task-description { color: #66727d; }
+#view-task .task-card input { border-color: #cbd5dc; background: #f8fafb; color: #273542; }
+#view-task .task-card .form-status { color: #5d6974; }
+#view-task .task-card .form-status.success { color: #9de2b8; }
+
+#view-me { padding: 18px; border-radius: 20px; background: #071a31; color: #f7fbff; }
+#view-me .me-page-heading h1, #view-me .me-page-heading span, #view-me .me-page-heading .eyebrow { color: #ffffff; }
+#view-me .me-page-heading .eyebrow { color: #9fc8e8; }
+#view-me .dash-card { border-color: #21476d; background: #102d4d; color: #f7fbff; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28); }
+#view-me .dash-card h2, #view-me .dash-card strong { color: #ffffff; }
+#view-me .dash-card p, #view-me .preference-toggle { color: #c7d9ea; }
+#view-me .dash-card input, #view-me .dash-card select { border-color: #3b648a; background: #f5f8fb; color: #172333; }
+#view-me .me-bonus-card { background: #173b61; border-color: #4f83b1; }
+#view-me .me-bonus-card strong { color: #9a6c00; }
+#view-me .form-status { color: #d8e9f7; }
+#view-me .btn-secondary { border-color: #5882a7; background: #173b61; color: #f7fbff; }
+
+#view-team { border-radius: 20px; }
+
+.dashboard-body.coffee-account-active { background: #30190f; }
+.coffee-account-active .dash-header { background: #44291b; border-color: #674630; color: #fff; }
+.coffee-account-active .dash-main { padding-top: 12px; }
+#view-product, #view-team, #view-me {
+    padding: 10px;
+    border: 1px solid #d9c9bc;
+    border-radius: 14px;
+    background: #f7f2ec;
+    color: #382417;
+}
+#view-product .product-page-heading { margin-bottom: 7px; }
+#view-product .product-page-heading h1, #view-team > h1 { margin-bottom: 8px; color: #54351f; font-family: Georgia, serif; font-size: 1.2rem; }
+#view-product .product-tabs { display: flex; gap: 4px; margin: 0 0 8px; padding: 3px; border-radius: 8px; background: #eadfd5; }
+#view-product .product-tab { flex: 1; min-height: 30px; padding: 5px 8px; border: 0; border-radius: 6px; background: transparent; color: #705742; font-size: .74rem; font-weight: 700; cursor: pointer; }
+#view-product .product-tab.active { background: #6b432b; color: #fff; box-shadow: 0 2px 6px rgba(48, 25, 15, .18); }
+#view-product .product-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr)); gap: 8px; }
+#view-product .product-card { border-color: #d9c9bc; border-radius: 10px; box-shadow: 0 2px 7px rgba(48, 25, 15, .1); }
+#view-product .product-card-heading { padding: 7px 9px; font-size: .8rem; }
+#view-product .product-card-image { height: 92px; }
+#view-product .product-image-fallback { font-size: 1.3rem; }
+#view-product .product-card-details { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; padding: 8px 9px; }
+#view-product .product-card-details p { align-items: baseline; gap: 3px; margin: 0; font-size: .66rem; }
+#view-product .product-card-details strong { font-size: .66rem; }
+#view-product .product-buy-button { padding: 8px 10px; font-size: .76rem; }
+#view-product .add-product-button { width: 27px; height: 27px; background: #6b432b; }
+.my-plans-grid { display: grid; gap: 7px; }
+.my-plan-card { padding: 9px; border: 1px solid #dfd0c3; border-radius: 9px; background: #fffaf5; }
+.my-plan-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.my-plan-heading small { color: #98785f; font-size: .62rem; font-weight: 800; letter-spacing: .06em; }
+.my-plan-heading h2 { margin: 2px 0 0; color: #54351f; font-size: .86rem; }
+.my-plan-heading > strong { flex: 0 0 auto; padding: 3px 7px; border-radius: 999px; background: #e9f2e7; color: #416c3e; font-size: .63rem; }
+.my-plan-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; margin: 7px 0; }
+.my-plan-metrics p { display: flex; justify-content: space-between; gap: 4px; margin: 0; color: #806b59; font-size: .66rem; }
+.my-plan-metrics b { color: #382417; text-align: right; }
+.my-plan-card .active-product-progress { background: #e9ddd2; }
+.my-plan-card .active-product-progress span { background: #9a6945; }
+.view-empty-state, .view-error-state { margin: 0; padding: 12px; border-radius: 9px; background: #fffaf5; color: #705742; font-size: .8rem; }
+.view-error-state { background: #fff0ed; color: #9e3026; }
+#view-team .team-page-title { margin: 0 0 8px; color: #54351f; font-family: Georgia, serif; font-size: 1.05rem; text-align: center; }
+#view-team .team-reference-layout { display: grid; gap: 7px; }
+#view-team .team-referral-card,
+#view-team .team-stat-card,
+#view-team .team-commission-detail { min-width: 0; padding: 9px; border: 1px solid #dfd0c3; border-radius: 9px; background: #fffaf5; color: #382417; }
+#view-team .team-referral-field { margin-bottom: 7px; }
+#view-team .team-referral-field label, #view-team .team-referral-label { display: block; margin: 0 0 3px; color: #705742; font-size: .65rem; font-weight: 700; }
+#view-team .team-copy-row { display: flex; align-items: center; gap: 5px; min-width: 0; }
+#view-team .team-copy-row > strong,
+#view-team .team-copy-row input { min-width: 0; flex: 1; padding: 6px 7px; border: 1px solid #e5d9ce; border-radius: 6px; background: #f7f0e9; color: #54351f; font-size: .7rem; }
+#view-team .team-copy-row input { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#view-team .team-copy-button { min-height: 29px; padding: 5px 11px; border: 0; border-radius: 6px; background: #6b432b; color: #fff; font-size: .65rem; font-weight: 700; cursor: pointer; }
+#view-team .team-share-label { margin: 5px 0 4px; color: #705742; font-size: .64rem; }
+#view-team .team-share-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+#view-team .team-share-actions button { min-width: 0; min-height: 31px; padding: 4px; border: 1px solid #dfd0c3; border-radius: 6px; background: #f1e8df; color: #54351f; font-size: .62rem; font-weight: 700; cursor: pointer; }
+#view-team #teamInviteStatus { min-height: 0; margin: 4px 0 0; font-size: .62rem; }
+#view-team #teamDataStatus { min-height: 0; margin: 0; font-size: .62rem; }
+#view-team .team-stats-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+#view-team .team-stat-card { display: grid; gap: 3px; }
+#view-team .team-stat-card span { color: #806b59; font-size: .62rem; }
+#view-team .team-stat-card strong { color: #54351f; font-size: .86rem; }
+#view-team .team-commission-tabs { display: flex; gap: 5px; overflow-x: auto; padding: 1px 0 2px; scrollbar-width: thin; }
+#view-team .team-commission-tab { flex: 1 0 auto; min-height: 31px; padding: 5px 8px; border: 1px solid #dfd0c3; border-radius: 6px; background: #fffaf5; color: #54351f; font-size: .65rem; font-weight: 700; cursor: pointer; }
+#view-team .team-commission-tab.active { border-color: #6b432b; background: #6b432b; color: #fff; }
+#view-team .team-commission-detail > strong { display: block; margin-bottom: 6px; color: #54351f; font-size: .8rem; }
+#view-team .team-commission-detail > p { display: flex; justify-content: space-between; gap: 6px; margin: 4px 0; color: #806b59; font-size: .67rem; }
+#view-team .team-commission-detail > p b { color: #54351f; }
+#view-team .team-commission-detail > .team-level-empty { display: block; margin-top: 8px; padding-top: 7px; border-top: 1px solid #eee4da; text-align: center; }
+#view-me .dash-card { margin-bottom: 7px; padding: 9px; border: 1px solid #dfd0c3; border-radius: 9px; background: #fffaf5; color: #382417; box-shadow: none; }
+#view-me .dash-card h2 { margin: 0 0 6px; color: #54351f; font-size: .84rem; }
+#view-me .dash-card p { margin: 4px 0; color: #806b59; font-size: .72rem; }
+#view-me .dash-card strong { color: #54351f; }
+#view-me .me-page-heading { gap: 8px; margin-bottom: 7px; }
+#view-me .me-page-heading h1 { margin: 0; color: #54351f; font-family: Georgia, serif; font-size: 1rem; }
+#view-me .me-page-heading span, #view-me .me-page-heading .eyebrow { color: #806b59; font-size: .68rem; }
+#view-me .me-avatar-large { width: 40px; height: 40px; border-radius: 50%; background: #7b4c2d; font-size: 1rem; box-shadow: none; }
+.me-balance-card { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; padding: 9px 10px; border: 1px solid #dfd0c3; border-radius: 9px; background: #6b432b; color: #f7eee7; }
+.me-balance-card span { font-size: .7rem; }
+.me-balance-card strong { color: #fff; font-size: .95rem; }
+.me-quick-links { display: grid; gap: 4px; margin-bottom: 7px; }
+.me-quick-links button { display: flex; align-items: center; gap: 7px; min-height: 32px; padding: 5px 8px; border: 1px solid #dfd0c3; border-radius: 7px; background: #fffaf5; color: #54351f; text-align: left; font-size: .7rem; cursor: pointer; }
+.me-quick-links button > span { display: grid; width: 22px; height: 22px; place-items: center; border-radius: 6px; background: #f1e8df; font-size: .82rem; }
+.me-quick-links button > b { margin-left: auto; color: #98785f; font-size: 1.1rem; }
+#view-me .form-field { margin-bottom: 6px; }
+#view-me .dash-card input, #view-me .dash-card select { padding: 7px 8px; border-color: #dfd0c3; border-radius: 7px; background: #fff; color: #382417; font-size: .72rem; }
+#view-me .preference-toggle { color: #705742; font-size: .76rem; }
+#view-me .me-bonus-card { background: #fff5d8; }
+#view-me .me-bonus-card strong { color: #7b4c2d; }
+#view-me .btn { min-height: 30px; padding: 6px 9px; border-radius: 7px; font-size: .68rem; }
+#view-me .btn-primary { background: #6b432b; }
+#view-me .btn-secondary { border-color: #dfd0c3; background: #f1e8df; color: #54351f; }
+#view-me #logoutBtn { width: 100%; margin-top: 2px; }
+
+.dash-card .form-field { margin-bottom: 12px; }
+.dash-card input, .dash-card select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    display: flex;
+    width: min(100%, 970px);
+    min-height: 82px;
+    align-items: stretch;
+    background: #ffffff;
+    border-top: 1px solid #b8c0c7;
+    box-shadow: 0 -4px 14px rgba(28, 39, 49, 0.16);
+    z-index: 20;
+    transform: translateX(-50%);
+}
+
+.bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    background: none;
+    border: none;
+    min-height: 82px;
+    padding: 8px 4px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #858585;
+    cursor: pointer;
+}
+
+.bottom-nav-item > span:last-child { color: inherit; }
+.bottom-nav-icon { width: 25px; height: 25px; fill: currentColor; }
+.bottom-nav-item.active { color: #54331f; }
+
+.dashboard-body.home-active { background: #30190f; }
+.dashboard-body.home-active .dash-main { max-width: 720px; padding: 10px 0 104px; }
+.coffee-account-balance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 9px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 0 0 12px 12px;
+    background: #44291b;
+    color: #f7eee7;
+}
+.coffee-account-balance span { font-size: .88rem; }
+.coffee-account-balance strong { color: #fff; font-size: 1.1rem; }
+#view-home .coffee-hero {
+    position: relative;
+    height: clamp(210px, 34vw, 250px);
+    margin-bottom: 10px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(120deg, #432819, #7c4c2f);
+}
+#view-home .coffee-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .7s ease; }
+#view-home .coffee-hero img.is-visible { opacity: 1; }
+#view-home .coffee-hero-caption {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(22, 23, 24, 0.72);
+    color: #fff;
+    font-weight: 700;
+    font-size: .92rem;
+}
+#view-home .coffee-hero-indicators { display: none; }
+#view-home .coffee-balance-card {
+    margin-bottom: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #51301f;
+    color: #fff;
+    text-align: center;
+}
+#view-home .coffee-balance-card h1 { margin: 0 0 3px; font-family: Georgia, serif; font-size: 1.35rem; }
+#view-home .coffee-balance-card > p { margin: 0; color: #f0daca; }
+#view-home .coffee-action-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+#view-home .coffee-action-grid .home-action-card {
+    display: grid;
+    min-height: 52px;
+    place-items: center;
+    align-content: center;
+    gap: 2px;
+    padding: 5px 3px;
+    border: 1px solid #d7c6b8;
+    border-radius: 8px;
+    background: #fbf7f2;
+    color: #382417;
+    text-align: center;
+    box-shadow: none;
+}
+#view-home .coffee-action-grid .home-action-icon { width: 22px; height: 22px; margin: 0; background: transparent; font-size: 1rem; }
+#view-home .coffee-action-grid .home-action-card strong { margin: 0; color: inherit; font-size: .6rem; text-transform: uppercase; }
+#view-home .coffee-about-card { margin: 10px 0; padding: 12px; border: 1px solid #d9c9bc; border-radius: 12px; background: #f1e8df; color: #54351f; }
+#view-home .coffee-about-card h2 { margin: 0 0 7px; font-family: Georgia, serif; font-size: 1rem; text-align: center; }
+#view-home .coffee-about-card p { margin: 0 0 7px; font-size: .78rem; line-height: 1.45; text-align: justify; }
+#view-home .coffee-about-card p:last-child { margin-bottom: 0; }
+.task-center-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 16px; }
+.task-center-heading h1 { margin: 0; }
+.task-center-heading .eyebrow { margin: 0 0 3px; }
+.task-center-shortcuts { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+
+@media (max-width: 520px) {
+    .coffee-account-active .dash-main { padding: 9px 4vw 100px; }
+    #view-product, #view-team, #view-me { padding: 8px; border-radius: 10px; }
+    #view-product .product-card-image { height: 82px; }
+    #view-team .team-referral-card, #view-team .team-stat-card, #view-team .team-commission-detail { padding: 8px; }
+    .me-quick-links { gap: 4px; }
+    .me-quick-links button { min-height: 30px; }
+    .home-action-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .home-action-card { min-height: 138px; padding: 12px 22px 12px 12px; }
+    .home-action-card span { display: block; font-size: 0.72rem; }
+    .home-action-card strong { font-size: 0.88rem; }
+    .home-action-card { min-width: 0; }
+    .home-action-icon { width: 42px; height: 42px; margin-bottom: 7px; font-size: 1.35rem; }
+    .home-action-watermark { right: 4px; bottom: 2px; font-size: 1.8rem; }
+    .home-brand-mark { width: 52px; height: 52px; }
+    .home-welcome strong { font-size: 1.15rem; }
+    .balance-heading h1 { font-size: 1.15rem; }
+    .task-card { margin-bottom: 9px; padding: 14px 13px 12px; border-radius: 14px; }
+    .task-card .task-icon { width: 44px; height: 44px; margin-bottom: 8px; font-size: 1.25rem; }
+    .task-card h2 { margin-bottom: 5px; font-size: 1.08rem; }
+    .task-card p { margin: 4px 0; font-size: 0.8rem; }
+    .task-card .task-description { margin-bottom: 6px; }
+    .task-card .btn { min-height: 36px; font-size: 0.8rem; }
+    .payment-method-card { padding: 16px 14px; }
+    .payment-details-card, .payout-account-card, .withdraw-balance-card, .withdraw-availability { padding: 16px; }
+    .copy-detail-row { align-items: flex-start; }
+    .copy-detail-button { padding: 9px 13px; }
+    #view-history { padding: 12px; }
+    #view-history .history-page-heading h1 { font-size: 1.35rem; }
+    #view-history .history-page-heading span { font-size: 0.72rem; }
+    .sponsors-showcase { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .sponsor-reference-banner { max-height: 96px; border-radius: 9px; }
+    .sponsor-card { min-height: 84px; padding: 7px 5px; }
+    .sponsor-featured { grid-column: span 2; min-height: 126px; }
+    .sponsor-featured .sponsor-image-wrap { width: 100%; }
+    .sponsor-featured img { width: 100%; height: 88px; }
+    .sponsor-card img, .sponsor-initials { width: 48px; height: 34px; }
+    .sponsor-featured .sponsor-image-wrap img { width: 100%; height: 88px; }
+    .sponsor-card strong { font-size: 0.68rem; }
+    .sponsor-card small, .sponsor-card em { font-size: 0.56rem; }
+    .sponsors-branding-line { font-size: 0.56rem; }
+    .sponsors-branding-tagline { font-size: 0.62rem; }
+    .dashboard-body.home-active .dash-main { padding: 10px 4.3vw 104px; }
+    .coffee-account-balance { margin-bottom: 10px; padding: 12px 14px; }
+    #view-home .coffee-hero { height: 210px; border-radius: 14px; }
+    #view-home .coffee-hero-caption { right: 8px; bottom: 8px; left: 8px; padding: 9px 12px; font-size: .84rem; }
+    #view-home .coffee-action-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+    #view-home .coffee-action-grid .home-action-card { min-height: 48px; }
+    #view-home .coffee-action-grid .home-action-icon { width: 20px; height: 20px; font-size: .9rem; }
+    #view-home .coffee-action-grid .home-action-card strong { font-size: .56rem; }
+    #view-home .coffee-about-card { padding: 11px; }
+    .task-center-heading { align-items: flex-start; }
+    .task-center-shortcuts { max-width: 55%; }
+    .bottom-nav, .bottom-nav-item { min-height: 76px; }
+}
+
+.coffee-account-active .dash-main { padding-top: 10px; }
+.coffee-account-active #view-task,
+.coffee-account-active #view-product,
+.coffee-account-active #view-team,
+.coffee-account-active #view-me,
+.coffee-account-active #view-history,
+.coffee-account-active #view-deposit,
+.coffee-account-active #view-withdraw,
+.coffee-account-active #view-support {
+    padding: 10px;
+    border: 1px solid #dfd0c3;
+    border-radius: 10px;
+    background: #f7f0e9;
+    color: #382417;
+}
+.coffee-account-active .dash-view h1,
+.coffee-account-active .dash-view h2 { color: #54351f; }
+.coffee-account-active #view-task .task-card {
+    margin-bottom: 7px;
+    padding: 10px;
+    border: 1px solid #dfd0c3;
+    border-radius: 9px;
+    background: #fffaf5;
+    box-shadow: none;
+}
+.coffee-account-active #view-task .task-card h2 { margin: 0 0 5px; font-size: .9rem; }
+.coffee-account-active #view-task .task-card p { margin: 4px 0; color: #806b59; font-size: .7rem; }
+.coffee-account-active #view-task .task-card .task-icon { width: 28px; height: 28px; margin-bottom: 5px; font-size: .9rem; }
+.coffee-account-active #view-task .task-card .btn { min-height: 28px; padding: 5px 8px; font-size: .66rem; }
+.coffee-account-active .task-center-heading { margin-bottom: 8px; }
+.coffee-account-active .task-center-heading h1 { font-size: 1rem; }
+.coffee-account-active .task-center-heading .eyebrow { color: #806b59; font-size: .6rem; }
+.coffee-account-active .task-center-shortcuts { justify-content: flex-end; gap: 4px; }
+.coffee-account-active .task-center-shortcuts .btn { min-height: 25px; padding: 4px 6px; font-size: .58rem; }
+.coffee-account-active #view-me .me-quick-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.coffee-account-active #view-me .me-quick-links button { min-width: 0; font-size: .64rem; }
+.coffee-account-active #view-deposit .payment-section-title { margin-bottom: 6px; color: #806b59; font-size: .65rem; }
+.coffee-account-active #view-deposit .payment-method-card { padding: 9px; border-color: #dfd0c3; background: #fffaf5; }
+.coffee-account-active #view-deposit .payment-method-card strong { font-size: .75rem; }
+.coffee-account-active #view-deposit .payment-amount-field { margin: 8px 0; }
+.coffee-account-active #view-deposit .payment-details-card,
+.coffee-account-active #view-deposit .deposit-extra-fields,
+.coffee-account-active #view-withdraw .bound-account-panel,
+.coffee-account-active #view-withdraw .withdraw-balance-card,
+.coffee-account-active #view-withdraw .withdraw-availability,
+.coffee-account-active #view-withdraw .withdrawal-submit-card,
+.coffee-account-active #view-support .support-intro-card,
+.coffee-account-active #view-support .support-channel-card {
+    margin-bottom: 7px;
+    padding: 9px;
+    border: 1px solid #dfd0c3;
+    border-radius: 9px;
+    background: #fffaf5;
+    color: #382417;
+    box-shadow: none;
+}
+.coffee-account-active #view-deposit .payment-details-card h2,
+.coffee-account-active #view-support .support-intro-card h2 { font-size: .85rem; }
+.coffee-account-active #view-deposit .copy-detail-row { padding: 5px 0; }
+.coffee-account-active #view-deposit .copy-detail-row small { color: #806b59; font-size: .55rem; }
+.coffee-account-active #view-deposit .copy-detail-row strong { color: #54351f; font-size: .68rem; }
+.coffee-account-active #view-deposit .pay-now-button { min-height: 32px; font-size: .7rem; }
+.coffee-account-active #view-deposit .dash-card input,
+.coffee-account-active #view-deposit .dash-card textarea,
+.coffee-account-active #view-withdraw input { padding: 7px; border-color: #dfd0c3; font-size: .7rem; }
+.coffee-account-active #view-withdraw .withdraw-balance-card h2 { margin: 0 0 4px; font-size: .82rem; }
+.coffee-account-active #view-withdraw .withdraw-balance-card strong { color: #54351f; font-size: 1rem; }
+.coffee-account-active #view-withdraw .withdraw-balance-card p,
+.coffee-account-active #view-withdraw .withdraw-availability,
+.coffee-account-active #view-withdraw .bound-account-panel p { color: #806b59; font-size: .68rem; }
+.coffee-account-active #view-withdraw .bound-account-heading h2 { font-size: .82rem; }
+.coffee-account-active #view-withdraw .withdraw-rules { margin: 7px 0; padding: 8px; font-size: .66rem; }
+.coffee-account-active #view-withdraw .withdrawal-submit-card .btn,
+.coffee-account-active #view-support .support-channel-card .btn { min-height: 29px; font-size: .68rem; }
+.coffee-account-active #view-support > h1 { margin-bottom: 8px; font-size: 1rem; }
+.coffee-account-active #view-support .support-channels { display: grid; gap: 6px; }
+.coffee-account-active #view-support .support-channel-card h3 { margin: 0 0 4px; color: #54351f; font-size: .8rem; }
+.coffee-account-active #view-support .support-channel-card p { margin: 3px 0; color: #806b59; font-size: .68rem; }
+.coffee-account-active #view-support .support-online-status { display: flex; align-items: center; gap: 6px; color: #416c3e; font-size: .72rem; font-weight: 700; }
+.support-online-indicator { width: 8px; height: 8px; border-radius: 50%; background: #3da76b; box-shadow: 0 0 0 3px rgba(61, 167, 107, .14); }
+.coffee-account-active #view-history .dash-card { padding: 9px; background: #fffaf5; }
+.coffee-account-active #view-history .history-page-heading h1 { font-size: 1rem; }
+.coffee-account-active #view-history .history-page-heading span { color: #806b59; font-size: .68rem; }
+.coffee-account-active .btn-primary { background: #6b432b; }
+.coffee-account-active .btn-secondary { border-color: #dfd0c3; background: #f1e8df; color: #54351f; }
+.coffee-account-active #view-deposit,
+.coffee-account-active #view-withdraw { max-width: 620px; margin: 0 auto; }
+.payment-page-heading { margin: 0 0 10px; text-align: center; }
+.payment-page-heading .eyebrow { margin: 0 0 2px; color: #98785f; font-size: .58rem; font-weight: 800; letter-spacing: .12em; }
+.payment-page-heading h1 { margin: 0; color: #54351f; font-family: Georgia, serif; font-size: 1.12rem; }
+.payment-panel-heading { margin: 0 0 10px; padding: 10px; border-radius: 9px; background: #51301f; color: #fff; text-align: center; }
+.payment-panel-heading h2 { margin: 0 0 2px; color: #fff !important; font-family: Georgia, serif; font-size: .9rem; }
+.payment-panel-heading p { margin: 0; color: #f0daca; font-size: .64rem; }
+.coffee-account-active .payment-section-title { margin: 7px 0 5px; color: #705742; font-size: .64rem; letter-spacing: .06em; }
+.coffee-account-active .payment-method-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; margin-bottom: 8px; }
+.coffee-account-active .payment-method-card { min-width: 0; gap: 5px; padding: 7px; border: 1px solid #d7c6b8; border-radius: 7px; background: #fffaf5; color: #54351f; }
+.coffee-account-active .payment-method-card.selected { border-color: #6b432b; background: #f1e8df; }
+.coffee-account-active .payment-method-card .method-letter { flex: 0 0 24px; width: 24px; height: 24px; border-radius: 6px; background: #f1e8df; font-size: .78rem; }
+.coffee-account-active #view-withdraw .payment-method-card[data-method="mtn"] .method-letter { background: #fff3c4; }
+.coffee-account-active #view-withdraw .payment-method-card[data-method="airtel"] .method-letter { background: #fde5e5; }
+.coffee-account-active #view-withdraw .payment-method-card.selected { border-color: #b39136; background: #fff7dc; }
+.coffee-account-active #view-withdraw .payment-method-card.selected[data-method="airtel"] { border-color: #c85e64; background: #fff0f0; }
+.coffee-account-active .payment-method-card > span:nth-child(2) { gap: 2px; }
+.coffee-account-active .payment-method-card strong { color: #54351f; font-size: .66rem; }
+.coffee-account-active .payment-method-card small { color: #806b59; font-size: .55rem; }
+.deposit-amount-picker { display: grid; gap: 6px; margin: 0 0 8px; }
+.deposit-amount-picker > label { color: #54351f; font-size: .68rem; font-weight: 700; }
+.deposit-amount-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+.deposit-amount-option { min-height: 30px; padding: 4px; border: 1px solid #d7c6b8; border-radius: 6px; background: #fffaf5; color: #54351f; font-size: .61rem; font-weight: 700; cursor: pointer; }
+.deposit-amount-option.selected { border-color: #6b432b; background: #6b432b; color: #fff; }
+.deposit-amount-picker input,
+.coffee-account-active #view-withdraw input { min-height: 34px; padding: 7px 8px; border: 1px solid #d7c6b8; border-radius: 6px; background: #fff; color: #382417; font-size: .7rem; }
+.coffee-account-active #view-deposit .payment-details-card,
+.coffee-account-active #view-deposit .deposit-extra-fields,
+.coffee-account-active #view-withdraw .withdraw-balance-card,
+.coffee-account-active #view-withdraw .withdraw-availability,
+.coffee-account-active #view-withdraw .withdraw-rules,
+.coffee-account-active #view-withdraw .withdrawal-submit-card {
+    margin-bottom: 7px;
+    padding: 9px;
+    border: 1px solid #dfd0c3;
+    border-radius: 8px;
+    background: #fffaf5;
+    color: #382417;
+    box-shadow: none;
+}
+.coffee-account-active #view-deposit .payment-details-card h2 { margin: 0 0 5px; color: #54351f; font-size: .76rem; }
+.coffee-account-active #view-deposit .copy-detail-row { margin: 4px 0; padding: 5px 6px; border-color: #e5d9ce; border-radius: 6px; background: #f7f0e9; }
+.coffee-account-active #view-deposit .copy-detail-row small { color: #806b59; font-size: .52rem; }
+.coffee-account-active #view-deposit .copy-detail-row strong { color: #54351f; font-size: .66rem; }
+.coffee-account-active #view-deposit .copy-detail-button { padding: 4px 7px; border-radius: 5px; background: #e9ddd2; color: #54351f; font-size: .58rem; }
+.coffee-account-active #view-deposit .payment-instructions { margin: 5px 0; color: #705742; font-size: .62rem; line-height: 1.4; }
+.coffee-account-active #view-deposit .deposit-verification-note { margin: 4px 0; color: #416c3e; font-size: .58rem; font-weight: 700; }
+.coffee-account-active #view-deposit .pay-now-button { min-height: 34px; margin-top: 5px; padding: 6px; border-radius: 6px; background: #27a865; color: #fff; font-size: .68rem; }
+.coffee-account-active #view-deposit .pay-now-button:disabled,
+.coffee-account-active #view-deposit #depositSubmitBtn:disabled { opacity: .55; cursor: not-allowed; }
+.coffee-account-active #view-deposit .deposit-extra-fields .form-field { margin-bottom: 6px; }
+.coffee-account-active #view-deposit .deposit-extra-fields label,
+.coffee-account-active #view-withdraw label { color: #54351f; font-size: .65rem; }
+.coffee-account-active #view-deposit textarea { min-height: 48px; }
+.coffee-account-active #view-deposit #depositSubmitBtn,
+.coffee-account-active #view-withdraw #withdrawSubmitBtn { min-height: 35px; padding: 7px; background: #6b432b; font-size: .7rem; }
+.coffee-account-active #view-deposit #depositSubmitBtn:disabled,
+.coffee-account-active #view-withdraw #withdrawSubmitBtn:disabled { opacity: .5; cursor: not-allowed; }
+.coffee-account-active #view-withdraw .withdraw-balance-card h2 { margin: 0 0 3px; color: #705742; font-size: .68rem; }
+.coffee-account-active #view-withdraw .withdraw-balance-card strong { display: block; padding: 3px 0; border: 0; background: transparent; color: #54351f; font-size: 1rem; }
+.coffee-account-active #view-withdraw .withdraw-balance-card p { margin: 2px 0 0; color: #806b59; font-size: .59rem; }
+.coffee-account-active #view-withdraw .withdraw-calculation { display: grid; gap: 0; margin: 0 0 7px; padding: 6px 8px; border: 1px dashed #d7c6b8; border-radius: 7px; background: #fffaf5; color: #705742; font-size: .64rem; }
+.coffee-account-active #view-withdraw .withdraw-calculation span { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; }
+.coffee-account-active #view-withdraw .withdraw-calculation span + span { border-top: 1px solid #eee4da; }
+.coffee-account-active #view-withdraw .withdraw-calculation strong,
+.coffee-account-active #view-withdraw .withdraw-calculation b { color: #416c3e; }
+.coffee-account-active #view-withdraw .withdraw-availability { color: #806b59; font-size: .61rem; }
+.coffee-account-active #view-withdraw .withdraw-rules { color: #705742; font-size: .61rem; line-height: 1.4; }
+.coffee-account-active #view-withdraw .withdraw-rules strong { color: #54351f; }
+.coffee-account-active #view-withdraw .withdraw-rules ol { margin: 5px 0; padding-left: 17px; }
+.coffee-account-active #view-withdraw .withdraw-rules li { margin: 2px 0; }
+.coffee-account-active #view-withdraw .withdraw-rules small { color: #806b59; }
+.coffee-account-active #view-withdraw .withdrawal-submit-card { padding: 0; border: 0; background: transparent; }
+.coffee-account-active #view-deposit .form-status,
+.coffee-account-active #view-withdraw .form-status { margin: 4px 0; font-size: .65rem; }
+.coffee-account-active #view-deposit [data-open-view="home"],
+.coffee-account-active #view-withdraw [data-open-view="home"] { min-height: 27px; padding: 5px 8px; font-size: .62rem; }
+
+@media (max-width: 520px) {
+    .coffee-account-active #view-task,
+    .coffee-account-active #view-product,
+    .coffee-account-active #view-team,
+    .coffee-account-active #view-me,
+    .coffee-account-active #view-history,
+    .coffee-account-active #view-deposit,
+    .coffee-account-active #view-withdraw,
+    .coffee-account-active #view-support { padding: 8px; }
+    .coffee-account-active .task-center-shortcuts { max-width: 60%; }
+    .coffee-account-active #view-task .task-center-heading { gap: 4px; }
+    .coffee-account-active #view-me .me-quick-links button { gap: 4px; padding: 4px; }
+}
+
+    .invite-rewards-panel {
+        margin: 0 0 12px;
+        padding: 12px;
+        border: 1px solid #dfd0c3;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #fffaf5, #f1e8df);
+    }
+    .invite-rewards-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .invite-rewards-heading h2 { margin: 0; color: #54351f; font-size: .95rem; }
+    .invite-rewards-heading .eyebrow { margin: 0 0 3px; color: #806b59; font-size: .58rem; letter-spacing: .08em; }
+    .invite-rewards-summary { display: flex; gap: 18px; margin: 10px 0; color: #806b59; font-size: .68rem; }
+    .invite-rewards-summary span { display: grid; gap: 2px; }
+    .invite-rewards-summary strong { color: #416c3e; font-size: .9rem; }
+    .task-referral-link { display: flex; gap: 6px; margin: 8px 0; }
+    .task-referral-link input { min-width: 0; flex: 1; padding: 6px 8px; border: 1px solid #dfd0c3; border-radius: 6px; background: #fff; color: #54351f; font-size: .65rem; }
+    .task-referral-link .btn { min-height: 28px; padding: 5px 8px; font-size: .62rem; }
+    .invite-rewards-list { display: grid; gap: 6px; }
+    .invite-reward-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(100px, .7fr) auto; align-items: center; gap: 10px; padding: 8px; border: 1px solid #e5d9ce; border-radius: 8px; background: #fff; }
+    .invite-reward-copy { display: grid; gap: 3px; color: #54351f; font-size: .7rem; }
+    .invite-reward-copy span { color: #416c3e; font-weight: 700; }
+    .invite-reward-progress { display: grid; gap: 4px; color: #806b59; font-size: .6rem; }
+    .invite-reward-progress-track { height: 5px; overflow: hidden; border-radius: 9px; background: #eee4da; }
+    .invite-reward-progress-track span { display: block; height: 100%; border-radius: inherit; background: #6b8f58; }
+    .invite-reward-card .btn { min-height: 27px; padding: 5px 9px; font-size: .62rem; }
+    .invite-reward-card .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .payout-account-card { border-color: #dfd0c3; border-radius: 10px; background: #fffaf5; }
+    .payout-account-card h2 { margin-bottom: 5px; color: #54351f; font-size: .95rem; }
+    .payout-account-help { margin: 0 0 10px; color: #806b59; font-size: .7rem; }
+    .payout-account-card .form-field { margin: 7px 0; }
+    .payout-account-card label { color: #54351f; font-size: .68rem; font-weight: 700; }
+    .payout-account-card input, .payout-account-card select { min-height: 34px; padding: 7px 8px; border: 1px solid #d7c6b8; border-radius: 6px; background: #fff; color: #382417; font-size: .72rem; }
+    .payout-account-card .btn { min-height: 32px; background: #6b432b; font-size: .68rem; }
+    .payout-mobile-field[hidden], .payout-bank-name-field[hidden], .payout-bank-number-field[hidden] { display: none; }
+
+    @media (max-width: 520px) {
+        .invite-reward-card { grid-template-columns: 1fr auto; }
+        .invite-reward-progress { grid-column: 1; grid-row: 2; }
+        .invite-reward-card .btn { grid-column: 2; grid-row: 1 / span 2; }
+        .invite-rewards-summary { gap: 12px; }
+        .task-referral-link input { font-size: .6rem; }
+    }

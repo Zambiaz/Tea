@@ -1,0 +1,25 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start BMG backend",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoLogo",
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"${workspaceFolder}\\.vscode\\start-bmg-server.ps1"
+			],
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"presentation": {
+				"reveal": "never",
+				"close": true
+			}
+		}
+	]
+}
