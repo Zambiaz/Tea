@@ -1128,7 +1128,7 @@ a {
     display: none;
 }
 
-.auth-background {
+.photo-background {
     position: fixed;
     z-index: 0;
     inset: 0;
@@ -1137,25 +1137,25 @@ a {
     pointer-events: none;
 }
 
-.auth-background-slide,
-.auth-background-overlay {
+.photo-background-slide,
+.photo-background-overlay {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
 }
 
-.auth-background-slide {
+.photo-background-slide {
     object-fit: cover;
     opacity: 0;
     transition: opacity 1s ease-in-out;
 }
 
-.auth-background-slide.is-active {
+.photo-background-slide.is-active {
     opacity: 1;
 }
 
-.auth-background-overlay {
+.photo-background-overlay {
     background: rgba(28, 21, 17, .24);
 }
 
@@ -1229,7 +1229,7 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .auth-background-slide {
+    .photo-background-slide {
         transition: none;
     }
 }

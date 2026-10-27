@@ -79,9 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelectorAll('[data-currency-label]').forEach((label) => { label.textContent = user.currency || 'RWF'; });
         document.getElementById('meAvatar').textContent = String(user.fullName || 'U').trim().charAt(0).toUpperCase() || 'U';
         document.getElementById('meHeadingName').textContent = user.fullName;
-        document.getElementById('balanceAmount').textContent = Number(user.balance).toLocaleString();
-        const meBalance = document.getElementById('meBalanceAmount');
-        if (meBalance) meBalance.textContent = Number(user.balance || 0).toLocaleString();
+        document.getElementById('availableBalanceAmount').textContent = Number(user.balance || 0).toLocaleString();
         applyAppearance(user.appearance || 'system');
     }
 
@@ -446,7 +444,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('meProfileStatus').textContent = currentUser.status || '-';
         const createdAt = currentUser.createdAt ? new Date(`${String(currentUser.createdAt).replace(' ', 'T')}Z`) : null;
         document.getElementById('meProfileCreated').textContent = createdAt && !Number.isNaN(createdAt.getTime()) ? createdAt.toLocaleDateString() : '-';
-        document.getElementById('meBalanceAmount').textContent = Number(currentUser.balance || 0).toLocaleString();
+        document.getElementById('availableBalanceAmount').textContent = Number(currentUser.balance || 0).toLocaleString();
         document.getElementById('appearanceSelect').value = currentUser.appearance || 'system';
         document.getElementById('notificationsToggle').checked = localStorage.getItem('bmg_notifications') !== 'false';
         document.getElementById('payoutAccountHolder').value = currentUser.fullName || '';

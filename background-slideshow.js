@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const slides = Array.from(document.querySelectorAll('.auth-background-slide'));
+    const slides = Array.from(document.querySelectorAll('.photo-background-slide'));
     if (slides.length < 2) return;
 
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');

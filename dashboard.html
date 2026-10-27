@@ -8,18 +8,25 @@
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body class="dashboard-body home-active">
+    <div class="photo-background dashboard-photo-background" aria-hidden="true">
+        <img class="photo-background-slide is-active" src="assets/coffee-slides/coffee-brewing.jpg" alt="" fetchpriority="high">
+        <img class="photo-background-slide" src="assets/coffee-slides/coffee-beans.jpg" alt="">
+        <img class="photo-background-slide" src="assets/coffee-slides/coffee-cafe.jpg" alt="">
+        <img class="photo-background-slide" src="assets/coffee-slides/coffee-selection.jpg" alt="">
+        <img class="photo-background-slide" src="assets/coffee-slides/iced-coffee.jpg" alt="">
+        <span class="photo-background-overlay"></span>
+    </div>
     <div class="page-shell">
         <main class="dash-main">
+            <div class="dashboard-balance-bar" aria-label="Available balance">
+                <span>Available Balance</span>
+                <strong><span id="availableBalanceAmount">0</span> <span data-currency-label>RWF</span></strong>
+            </div>
             <section class="dash-view coffee-home-view" id="view-home">
                 <div class="coffee-hero" id="coffeeHero">
                     <img id="coffeeHeroImage" alt="" hidden>
                     <div class="coffee-hero-caption" id="coffeeHeroCaption">Premium Coffee Experience</div>
                     <div class="coffee-hero-indicators" id="coffeeHeroIndicators" aria-label="Featured photos"></div>
-                </div>
-
-                <div class="coffee-account-balance">
-                    <span>Account Balance</span>
-                    <strong><span id="balanceAmount">0</span> <span data-currency-label>RWF</span></strong>
                 </div>
 
                 <div class="home-action-grid coffee-action-grid">
@@ -101,7 +108,6 @@
 
             <section class="dash-view" id="view-me" hidden>
                 <div class="me-page-heading"><div class="me-avatar-large" id="meAvatar">U</div><div><p class="eyebrow">MY ACCOUNT</p><h1 id="meHeadingName">Your profile</h1><span id="meProfilePhone">-</span></div></div>
-                <div class="me-balance-card"><span>Account Balance</span><strong><span id="meBalanceAmount">0</span> <span data-currency-label>RWF</span></strong></div>
                 <div class="me-quick-links" aria-label="Account shortcuts">
                     <button type="button" data-open-view="history"><span aria-hidden="true">&#128202;</span>Transaction History <b aria-hidden="true">&#8250;</b></button>
                     <button type="button" data-open-view="product"><span aria-hidden="true">&#128717;</span>My Investment <b aria-hidden="true">&#8250;</b></button>
@@ -217,6 +223,7 @@
         </nav>
     </div>
 
+    <script src="background-slideshow.js"></script>
     <script src="api.js"></script>
     <script src="notification-client.js"></script>
     <script src="dashboard.js?v=product-cards-v1"></script>

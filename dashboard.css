@@ -728,6 +728,46 @@
 .coffee-account-active #view-deposit [data-open-view="home"],
 .coffee-account-active #view-withdraw [data-open-view="home"] { min-height: 27px; padding: 5px 8px; font-size: .62rem; }
 
+.dashboard-body.home-active,
+.dashboard-body.coffee-account-active { background: transparent; }
+.dashboard-body .page-shell { position: relative; z-index: 1; }
+.dashboard-photo-background .photo-background-overlay { background: rgba(25, 16, 11, .38); }
+.dashboard-balance-bar {
+    position: sticky;
+    top: 8px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto 10px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, .36);
+    border-radius: 12px;
+    background: rgba(48, 29, 20, .84);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(20, 10, 5, .2);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+}
+.dashboard-balance-bar > span { font-size: .82rem; font-weight: 700; }
+.dashboard-balance-bar strong { color: #fff; font-size: 1rem; text-align: right; }
+.dashboard-balance-bar strong span:last-child { color: #f0daca; font-size: .8rem; }
+.coffee-account-active #view-task,
+.coffee-account-active #view-product,
+.coffee-account-active #view-team,
+.coffee-account-active #view-me,
+.coffee-account-active #view-history,
+.coffee-account-active #view-deposit,
+.coffee-account-active #view-withdraw,
+.coffee-account-active #view-support {
+    background: rgba(247, 240, 233, .82);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
 @media (max-width: 520px) {
     .coffee-account-active #view-task,
     .coffee-account-active #view-product,
