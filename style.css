@@ -1117,10 +1117,52 @@ a {
 .coffee-auth-page {
     position: relative;
     overflow-x: hidden;
-    background:
-        radial-gradient(ellipse 9px 16px at 20px 20px, #29150e 0 58%, #68442f 66% 72%, transparent 76%) 0 0 / 46px 58px,
-        radial-gradient(ellipse 8px 14px at 20px 20px, #482718 0 60%, #765038 69% 74%, transparent 78%) 23px 29px / 46px 58px,
-        linear-gradient(135deg, #24140f, #57331f 52%, #24140f);
+    background: transparent;
+}
+
+.coffee-auth-page.register-page {
+    background: transparent;
+}
+
+.coffee-auth-page.register-page::before {
+    display: none;
+}
+
+.auth-background {
+    position: fixed;
+    z-index: 0;
+    inset: 0;
+    overflow: hidden;
+    background: #30251f;
+    pointer-events: none;
+}
+
+.auth-background-slide,
+.auth-background-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.auth-background-slide {
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.auth-background-slide.is-active {
+    opacity: 1;
+}
+
+.auth-background-overlay {
+    background: rgba(28, 21, 17, .24);
+}
+
+.coffee-auth-page .page-shell {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
 }
 
 .coffee-auth-page .auth-main {
@@ -1137,7 +1179,9 @@ a {
     padding: 26px 24px 22px;
     border: 1px solid rgba(255, 255, 255, .82);
     border-radius: 22px;
-    background: rgba(255, 255, 255, .95);
+    background: rgba(255, 255, 255, .78);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     box-shadow: 0 22px 70px rgba(20, 10, 5, .42);
 }
 
@@ -1182,4 +1226,10 @@ a {
     .coffee-auth-page .coffee-auth-card { padding: 28px 20px 24px; border-radius: 20px; }
     .coffee-auth-card .form-field input { min-height: 54px; }
     .coffee-auth-card .phone-country-select-wrap { flex-basis: 138px; min-width: 118px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-background-slide {
+        transition: none;
+    }
 }
