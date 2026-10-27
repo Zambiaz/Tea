@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="admin.css?v=admin-users-v3">
+    <link rel="stylesheet" href="admin.css?v=payment-cards-v1">
 </head>
 <body class="admin-body">
 
@@ -91,6 +91,10 @@
                 <button type="button" class="admin-nav-item" data-admin-tab="giftcode-settings">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="8" width="16" height="12" rx="2"></rect><path d="M4 12h16M12 8v12M8 8c0-2 1.5-4 4-4s4 2 4 4"></path></svg>
                     <span>Gift Codes</span>
+                </button>
+                <button type="button" class="admin-nav-item" data-admin-tab="payment-requests">
+                    <span aria-hidden="true">↕</span>
+                    <span>Payment Requests</span>
                 </button>
                 <button type="button" class="admin-nav-item" data-admin-tab="deposit-settings">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
@@ -354,6 +358,11 @@
                                 <option value="UG">🇺🇬 Uganda (UGX)</option>
                                 <option value="ZM">🇿🇲 Zambia (ZMW)</option>
                                 <option value="BI">🇧🇮 Burundi (BIF)</option>
+                                <option value="CD">🇨🇩 DR Congo (CDF)</option>
+                                <option value="KE">🇰🇪 Kenya (KES)</option>
+                                <option value="SO">🇸🇴 Somalia (SOS)</option>
+                                <option value="SS">🇸🇸 South Sudan (SSP)</option>
+                                <option value="TZ">🇹🇿 Tanzania (TZS)</option>
                             </select>
                         </div>
                         <div class="form-field">
@@ -378,6 +387,29 @@
                         <div class="empty-state" id="giftCodeEmptyState"><p>No gift codes created yet.</p></div>
                     </div>
 
+                </section>
+
+                <section class="admin-section" data-admin-section="payment-requests">
+                    <div class="payment-requests-hero">
+                        <div><p class="payment-requests-eyebrow">FINANCE WORKSPACE</p><h1>Payment requests</h1><p>Review incoming deposits and process outgoing withdrawals.</p></div>
+                        <button type="button" class="btn btn-secondary" id="refreshPaymentRequests"><span aria-hidden="true">↻</span> Refresh queue</button>
+                    </div>
+                    <p class="form-status" id="paymentRequestsStatus" role="status" aria-live="polite"></p>
+
+                    <div class="payment-queue-summary">
+                        <article class="payment-summary-card payment-summary-deposit"><span class="payment-summary-icon" aria-hidden="true">↓</span><div><small>Waiting for review</small><strong id="pendingDepositCount">0</strong><span>Deposits</span></div></article>
+                        <article class="payment-summary-card payment-summary-withdrawal"><span class="payment-summary-icon" aria-hidden="true">↑</span><div><small>Needs action</small><strong id="activeWithdrawalCount">0</strong><span>Withdrawals</span></div></article>
+                    </div>
+
+                    <section class="payment-queue-section">
+                        <div class="payment-queue-heading"><div><p class="payment-requests-eyebrow">MONEY IN</p><h2>Deposit requests</h2></div><span class="payment-queue-count"><b id="pendingDepositCountLabel">0</b> pending</span></div>
+                        <div id="paymentDepositsTableBody" class="payment-request-grid"><div class="payment-empty-state">Open this section to load requests.</div></div>
+                    </section>
+
+                    <section class="payment-queue-section">
+                        <div class="payment-queue-heading"><div><p class="payment-requests-eyebrow">MONEY OUT</p><h2>Withdrawal requests</h2></div><span class="payment-queue-count"><b id="activeWithdrawalCountLabel">0</b> to process</span></div>
+                        <div id="paymentWithdrawalsTableBody" class="payment-request-grid"><div class="payment-empty-state">Open this section to load requests.</div></div>
+                    </section>
                 </section>
 
                 <!-- DEPOSIT SETTINGS -->
@@ -789,6 +821,6 @@ Members can track their plans, invite friends, and review available tasks and ac
 
     <script src="api.js"></script>
     <script src="notification-client.js"></script>
-    <script src="admin.js?v=admin-users-v3"></script>
+    <script src="admin.js?v=payment-requests-v2"></script>
 </body>
 </html>

@@ -626,7 +626,13 @@ const saveCountryConfig = db.prepare(`
     VALUES (?, 1, ?, ?)
 `);
 for (const country of Object.values(COUNTRIES)) {
-    saveCountryConfig.run(country.code, JSON.stringify(countrySettings), JSON.stringify(legacyProducts));
+    const settings = JSON.parse(JSON.stringify(countrySettings));
+    if (settings.withdraw?.availability) {
+        const timeZoneCity = country.timeZone.split('/').pop().replace(/_/g, ' ');
+        settings.withdraw.availability.timeZone = country.timeZone;
+        settings.withdraw.availability.timezoneLabel = `${timeZoneCity} time`;
+    }
+    saveCountryConfig.run(country.code, JSON.stringify(settings), JSON.stringify(legacyProducts));
 }
 
 const countryWithdrawalConfigs = db.prepare('SELECT country_code, settings_json FROM country_configs').all();

@@ -145,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sections = document.querySelectorAll('.admin-section');
         let liveUsersRefresh = null;
         let overviewRefresh = null;
+        let paymentRequestsRefresh = null;
 
         const adminPromoterEvents = new EventSource(`${BMG_API_BASE}/api/promoters/events?token=${encodeURIComponent(BmgApi.getToken())}`);
         adminPromoterEvents.addEventListener('PROMOTER_DELETED', () => loadPromoters());
@@ -177,6 +178,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.clearInterval(liveUsersRefresh);
                     liveUsersRefresh = null;
                 }
+                if (target === 'payment-requests') {
+                    loadPaymentRequests();
+                    if (paymentRequestsRefresh) window.clearInterval(paymentRequestsRefresh);
+                    paymentRequestsRefresh = window.setInterval(loadPaymentRequests, 30000);
+                } else if (paymentRequestsRefresh) {
+                    window.clearInterval(paymentRequestsRefresh);
+                    paymentRequestsRefresh = null;
+                }
                 if (target === 'chakin-settings') loadChakinCheckins();
                 if (target === 'giftcode-settings') loadGiftCodes();
                 if (target === 'country-settings') loadCountrySettings();
@@ -196,6 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logoutBtn.addEventListener('click', () => {
                 if (overviewRefresh) window.clearInterval(overviewRefresh);
                 if (liveUsersRefresh) window.clearInterval(liveUsersRefresh);
+                if (paymentRequestsRefresh) window.clearInterval(paymentRequestsRefresh);
                 adminPromoterEvents.close();
                 BmgApi.clearSession();
                 showLoginGate();
@@ -203,6 +213,140 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // ---------- Overview ----------
+        const paymentRequestsStatus = document.getElementById('paymentRequestsStatus');
+        const paymentDepositsTableBody = document.getElementById('paymentDepositsTableBody');
+        const paymentWithdrawalsTableBody = document.getElementById('paymentWithdrawalsTableBody');
+
+        async function loadPaymentRequests() {
+            if (!paymentDepositsTableBody || !paymentWithdrawalsTableBody) return false;
+            try {
+                const [depositResult, pendingWithdrawals, approvedWithdrawals] = await Promise.all([
+                    BmgApi.request('/deposits?status=pending'),
+                    BmgApi.request('/withdrawals?status=pending'),
+                    BmgApi.request('/withdrawals?status=approved'),
+                ]);
+                const deposits = depositResult.deposits || [];
+                const withdrawals = [...(pendingWithdrawals.withdrawals || []), ...(approvedWithdrawals.withdrawals || [])];
+                document.getElementById('pendingDepositCount').textContent = String(deposits.length);
+                document.getElementById('pendingDepositCountLabel').textContent = String(deposits.length);
+                document.getElementById('activeWithdrawalCount').textContent = String(withdrawals.length);
+                document.getElementById('activeWithdrawalCountLabel').textContent = String(withdrawals.length);
+                paymentDepositsTableBody.innerHTML = deposits.map((deposit) => `
+                    <article class="payment-request-card">
+                        <div class="payment-request-card-top">
+                            <span class="payment-request-type deposit-type"><span aria-hidden="true">↓</span> Deposit</span>
+                            <span class="payment-status-pill status-pending">Needs review</span>
+                        </div>
+                        <div class="payment-request-main">
+                            <div><small>Requested amount</small><strong>${Number(deposit.amount || 0).toLocaleString()} <span>${escapeHtml(deposit.currency || '')}</span></strong></div>
+                            <div class="payment-request-method">${escapeHtml(String(deposit.method || '').toUpperCase())}<small>${escapeHtml(deposit.userCountryCode || '')}</small></div>
+                        </div>
+                        <div class="payment-request-user">
+                            <span class="payment-user-avatar">${escapeHtml(String(deposit.userName || 'U').trim().charAt(0).toUpperCase())}</span>
+                            <div><strong>${escapeHtml(deposit.userName || 'User')}</strong><small>${escapeHtml(deposit.userPhone || '')}</small></div>
+                            <time>${escapeHtml(deposit.createdAt || '')}</time>
+                        </div>
+                        <div class="payment-request-details">
+                            <div><small>Sender</small><strong>${escapeHtml(deposit.senderName || '—')}</strong><span>${escapeHtml(deposit.senderPhone || '')}</span></div>
+                            <div><small>Payment reference</small><strong>${escapeHtml(deposit.paymentProof || 'Not provided')}</strong></div>
+                        </div>
+                        <div class="payment-request-actions">
+                            <button type="button" class="payment-action-button payment-action-approve" data-payment-type="deposit" data-payment-action="approve" data-id="${escapeHtml(deposit.id)}">Approve deposit</button>
+                            <button type="button" class="payment-action-button payment-action-reject" data-payment-type="deposit" data-payment-action="reject" data-id="${escapeHtml(deposit.id)}">Reject</button>
+                        </div>
+                    </article>
+                `).join('') || '<div class="payment-empty-state"><span aria-hidden="true">↓</span><strong>All caught up</strong><p>No pending deposits to review.</p></div>';
+                paymentWithdrawalsTableBody.innerHTML = withdrawals.map((withdrawal) => `
+                    <article class="payment-request-card">
+                        <div class="payment-request-card-top">
+                            <span class="payment-request-type withdrawal-type"><span aria-hidden="true">↑</span> Withdrawal</span>
+                            <span class="payment-status-pill status-${escapeHtml(withdrawal.status)}">${escapeHtml(withdrawal.status === 'pending' ? 'Needs review' : 'Approved · ready to pay')}</span>
+                        </div>
+                        <div class="payment-request-main">
+                            <div><small>Requested amount</small><strong>${Number(withdrawal.amount || 0).toLocaleString()} <span>${escapeHtml(withdrawal.currency || '')}</span></strong></div>
+                            <div class="payment-request-method">${escapeHtml(String(withdrawal.method || '').toUpperCase())}<small>${escapeHtml(withdrawal.userCountryCode || '')}</small></div>
+                        </div>
+                        <div class="payment-request-user">
+                            <span class="payment-user-avatar">${escapeHtml(String(withdrawal.userName || 'U').trim().charAt(0).toUpperCase())}</span>
+                            <div><strong>${escapeHtml(withdrawal.userName || 'User')}</strong><small>${escapeHtml(withdrawal.userPhone || '')}</small></div>
+                            <time>${escapeHtml(withdrawal.createdAt || '')}</time>
+                        </div>
+                        <div class="payment-request-details">
+                            <div><small>Pay to</small><strong>${escapeHtml(withdrawal.accountHolderName || '—')}</strong><span>${escapeHtml(withdrawal.method === 'bank'
+                                ? `${withdrawal.bankName || ''} · ${withdrawal.bankAccountNumber || ''}`
+                                : withdrawal.mobileMoneyNumber || '')}</span></div>
+                            <div class="payment-payout-breakdown"><span>Fee <b>${Number(withdrawal.fee || 0).toLocaleString()} ${escapeHtml(withdrawal.currency || '')}</b></span><strong>Net payout <b>${Number(withdrawal.receivedAmount || 0).toLocaleString()} ${escapeHtml(withdrawal.currency || '')}</b></strong></div>
+                        </div>
+                        <div class="payment-request-actions">
+                            ${withdrawal.status === 'pending'
+                                ? `<button type="button" class="payment-action-button payment-action-approve" data-payment-type="withdrawal" data-payment-action="approve" data-id="${escapeHtml(withdrawal.id)}">Approve withdrawal</button>
+                                   <button type="button" class="payment-action-button payment-action-reject" data-payment-type="withdrawal" data-payment-action="reject" data-id="${escapeHtml(withdrawal.id)}">Reject</button>`
+                                : `<button type="button" class="payment-action-button payment-action-paid" data-payment-type="withdrawal" data-payment-action="mark-paid" data-id="${escapeHtml(withdrawal.id)}">Confirm payment sent</button>`}
+                        </div>
+                    </article>
+                `).join('') || '<div class="payment-empty-state"><span aria-hidden="true">↑</span><strong>No withdrawals to process</strong><p>Pending and approved withdrawals will appear here.</p></div>';
+                paymentRequestsStatus.textContent = '';
+                paymentRequestsStatus.className = 'form-status';
+                return true;
+            } catch (error) {
+                paymentRequestsStatus.textContent = error.message || 'Could not load payment requests.';
+                paymentRequestsStatus.className = 'form-status error';
+                paymentDepositsTableBody.innerHTML = '<div class="payment-empty-state payment-empty-error">Payment requests could not be loaded. Please refresh and try again.</div>';
+                paymentWithdrawalsTableBody.innerHTML = '<div class="payment-empty-state payment-empty-error">Payment requests could not be loaded. Please refresh and try again.</div>';
+                return false;
+            }
+        }
+
+        async function handlePaymentRequestAction(event) {
+            const button = event.target.closest('[data-payment-action]');
+            if (!button) return;
+            const { paymentType, paymentAction, id } = button.dataset;
+            const isDeposit = paymentType === 'deposit';
+            const itemType = isDeposit ? 'deposit' : 'withdrawal';
+            const actionLabel = paymentAction === 'mark-paid' ? 'mark this withdrawal as paid' : `${paymentAction} this ${itemType}`;
+            let body;
+            if (paymentAction === 'reject') {
+                const confirmation = await askConfirmation({
+                    title: `Reject ${itemType}`,
+                    message: `Reject this ${itemType} request?${isDeposit ? '' : ' The reserved withdrawal amount will be returned to the user.'}`,
+                    requireReason: true,
+                });
+                if (!confirmation) return;
+                body = { reason: confirmation.reason };
+            } else if (!await askConfirmation({
+                title: `${paymentAction === 'mark-paid' ? 'Mark withdrawal paid' : `${paymentAction} ${itemType}`}`,
+                message: `Are you sure you want to ${actionLabel}?`,
+            })) {
+                return;
+            }
+
+            button.disabled = true;
+            const path = isDeposit
+                ? `/deposits/${encodeURIComponent(id)}/${paymentAction}`
+                : `/withdrawals/${encodeURIComponent(id)}/${paymentAction}`;
+            try {
+                await BmgApi.request(path, { method: 'POST', body });
+                const resultLabel = paymentAction === 'mark-paid'
+                    ? 'marked as paid'
+                    : paymentAction === 'approve' ? 'approved' : 'rejected';
+                if (await loadPaymentRequests()) {
+                    paymentRequestsStatus.textContent = `The ${itemType} request was ${resultLabel}.`;
+                    paymentRequestsStatus.className = 'form-status success';
+                } else {
+                    paymentRequestsStatus.textContent = `The ${itemType} request was ${resultLabel}, but the queue could not be refreshed. Use Refresh to verify its status.`;
+                    paymentRequestsStatus.className = 'form-status error';
+                }
+            } catch (error) {
+                button.disabled = false;
+                paymentRequestsStatus.textContent = error.message || `Could not ${actionLabel}.`;
+                paymentRequestsStatus.className = 'form-status error';
+            }
+        }
+
+        paymentDepositsTableBody.addEventListener('click', handlePaymentRequestAction);
+        paymentWithdrawalsTableBody.addEventListener('click', handlePaymentRequestAction);
+        document.getElementById('refreshPaymentRequests').addEventListener('click', loadPaymentRequests);
+
         async function loadOverview() {
             try {
                 const [overview, products, depositSettings] = await Promise.all([
@@ -1471,7 +1615,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // ---------- Gift Code settings ----------
         const giftCodeSettingsForm = document.getElementById('giftCodeSettingsForm');
         const generateGiftCodeBtn = document.getElementById('generateGiftCodeBtn');
-        const giftCurrencies = { RW: 'RWF', UG: 'UGX', ZM: 'ZMW', BI: 'BIF' };
+        const giftCurrencies = { RW: 'RWF', UG: 'UGX', ZM: 'ZMW', BI: 'BIF', CD: 'CDF', KE: 'KES', SO: 'SOS', SS: 'SSP', TZ: 'TZS' };
         if (generateGiftCodeBtn) {
             generateGiftCodeBtn.addEventListener('click', async () => {
                 const { code } = await BmgApi.request('/tasks/gift-codes/generate-code');

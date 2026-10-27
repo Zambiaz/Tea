@@ -3,6 +3,11 @@ const COUNTRIES = Object.freeze({
     UG: Object.freeze({ code: 'UG', name: 'Uganda', currency: 'UGX', flag: '🇺🇬', flagImage: '/assets/flags/ug.svg', dialCode: '+256', timeZone: 'Africa/Kampala' }),
     ZM: Object.freeze({ code: 'ZM', name: 'Zambia', currency: 'ZMW', flag: '🇿🇲', flagImage: '/assets/flags/zm.svg', dialCode: '+260', timeZone: 'Africa/Lusaka' }),
     BI: Object.freeze({ code: 'BI', name: 'Burundi', currency: 'BIF', flag: '🇧🇮', flagImage: '/assets/flags/bi.svg', dialCode: '+257', timeZone: 'Africa/Bujumbura' }),
+    CD: Object.freeze({ code: 'CD', name: 'DR Congo', currency: 'CDF', flag: '🇨🇩', flagImage: '/assets/flags/cd.svg', dialCode: '+243', timeZone: 'Africa/Kinshasa' }),
+    KE: Object.freeze({ code: 'KE', name: 'Kenya', currency: 'KES', flag: '🇰🇪', flagImage: '/assets/flags/ke.svg', dialCode: '+254', timeZone: 'Africa/Nairobi' }),
+    SO: Object.freeze({ code: 'SO', name: 'Somalia', currency: 'SOS', flag: '🇸🇴', flagImage: '/assets/flags/so.svg', dialCode: '+252', timeZone: 'Africa/Mogadishu' }),
+    SS: Object.freeze({ code: 'SS', name: 'South Sudan', currency: 'SSP', flag: '🇸🇸', flagImage: '/assets/flags/ss.svg', dialCode: '+211', timeZone: 'Africa/Juba' }),
+    TZ: Object.freeze({ code: 'TZ', name: 'Tanzania', currency: 'TZS', flag: '🇹🇿', flagImage: '/assets/flags/tz.svg', dialCode: '+255', timeZone: 'Africa/Dar_es_Salaam' }),
 });
 
 const COUNTRY_CODES = Object.freeze(Object.keys(COUNTRIES));
@@ -39,6 +44,11 @@ function isValidNationalPhone(code, phone) {
         UG: /^0?7\d{8}$/,
         ZM: /^0?9\d{8}$/,
         BI: /^[267]\d{7}$/,
+        CD: /^0?[89]\d{8}$/,
+        KE: /^0?[17]\d{8}$/,
+        SO: /^0?[679]\d{8}$/,
+        SS: /^0?[79]\d{8}$/,
+        TZ: /^0?[6789]\d{8}$/,
     };
     return patterns[String(code || '').toUpperCase()]?.test(value) || false;
 }
@@ -47,7 +57,7 @@ function normalizeNationalPhone(code, phone) {
     const countryCode = String(code || '').toUpperCase();
     const value = String(phone || '');
     if (!isValidNationalPhone(countryCode, value)) return null;
-    if (countryCode === 'RW' || countryCode === 'UG' || countryCode === 'ZM') {
+    if (countryCode !== 'BI') {
         return value.startsWith('0') ? value : `0${value}`;
     }
     return value;
@@ -58,7 +68,7 @@ function getNationalPhoneCandidates(code, phone) {
     if (!normalized) return [];
     const candidates = [normalized];
     const country = COUNTRIES[String(code || '').toUpperCase()];
-    const internationalNationalNumber = ['RW', 'UG', 'ZM'].includes(country?.code)
+    const internationalNationalNumber = country?.code !== 'BI'
         ? normalized.slice(1)
         : normalized;
     if (country) {

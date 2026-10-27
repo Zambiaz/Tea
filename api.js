@@ -1,18 +1,30 @@
 // Thin fetch wrapper shared by all pages. Talks to the BMG backend API and stores the
 // session token client-side (a JWT is not a secret to protect from the user themselves,
 // but every sensitive check still happens server-side on each request).
-const BMG_API_BASE = window.location.port === '4000'
-    ? '' // served by the backend itself
+const isLocalBmgHost = (hostname) => hostname === 'localhost'
+    || hostname === '127.0.0.1'
+    || /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)
+    || /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname)
+    || /^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/.test(hostname);
+const configuredApiBase = String(window.BMG_API_ORIGIN || '').replace(/\/+$/, '');
+const BMG_API_BASE = configuredApiBase || (window.location.port === '4000'
+    ? ''
     : window.location.protocol === 'file:'
         ? 'http://localhost:4000'
-        : `${window.location.protocol}//${window.location.hostname}:4000`;
+        : isLocalBmgHost(window.location.hostname)
+            ? `${window.location.protocol}//${window.location.hostname}:4000`
+            : '');
 
 const BmgApi = (() => {
-    const API_BASE_CANDIDATES = window.location.port === '4000'
+    const API_BASE_CANDIDATES = configuredApiBase
+        ? [configuredApiBase]
+        : window.location.port === '4000'
         ? ['']
         : window.location.protocol === 'file:'
             ? ['http://localhost:4000', 'http://localhost:4100']
-            : [BMG_API_BASE, `${window.location.protocol}//${window.location.hostname}:4100`];
+            : isLocalBmgHost(window.location.hostname)
+                ? [BMG_API_BASE, `${window.location.protocol}//${window.location.hostname}:4100`]
+                : [''];
     const SESSION_KEYS = {
         user: { token: 'bmg_user_token', user: 'bmg_user_data' },
         admin: { token: 'bmg_admin_token', user: 'bmg_admin_data' },
@@ -96,7 +108,7 @@ const BmgApi = (() => {
         }
     }
 
-    async function request(path, { method = 'GET', body, auth = true } = {}) {
+    async function request(path, { method = 'GET', body, auth = true, timeoutMs = 5000 } = {}) {
         const headers = { 'Content-Type': 'application/json' };
         const token = auth ? getToken() : null;
         if (auth && token) headers.Authorization = `Bearer ${token}`;
@@ -104,16 +116,21 @@ const BmgApi = (() => {
         let response;
         let lastError;
         for (const base of API_BASE_CANDIDATES) {
+            const controller = new AbortController();
+            const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
             try {
                 response = await fetch(`${base}/api${path}`, {
                     method,
                     headers,
                     cache: 'no-store',
                     body: body ? JSON.stringify(body) : undefined,
+                    signal: controller.signal,
                 });
                 break;
             } catch (err) {
                 lastError = err;
+            } finally {
+                window.clearTimeout(timeout);
             }
         }
         if (!response) {

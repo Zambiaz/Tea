@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd server && npm ci",
+  "functions": {
+    "api/[...path].js": {
+      "includeFiles": "server/migrations/**"
+    }
+  }
+}

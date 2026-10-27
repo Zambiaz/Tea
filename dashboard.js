@@ -267,22 +267,34 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const dailyIncome = Number(p.dailyIncomeAmount || p.dailyIncome || Math.round(price * Number(p.dailyIncomePercent || 0) / 100));
                 const totalIncome = Number(p.totalIncome || dailyIncome * term);
                 const remainingSlots = Math.max(0, Number(p.stock || 0));
+                const totalSlots = Math.max(remainingSlots, Number(p.totalSlots || p.total_slots || 0));
                 const image = p.imageProxyUrl || p.imageUrl || p.image_url || '';
                 const initials = String(p.name || 'Product').split(/\s+/).map((part) => part[0]).join('').slice(0, 3).toUpperCase();
                 const productStatus = p.status === 'sold_out' || remainingSlots <= 0 ? 'SOLD OUT' : p.status === 'open_soon' ? 'OPEN SOON' : 'BUY NOW';
                 const canPurchase = p.status === 'active' && remainingSlots > 0 && !purchasedProductIds.has(p.id);
                 const buttonColor = productActionColor(p.buttonColor);
+                const statusLabel = p.status === 'sold_out' || remainingSlots <= 0 ? 'Sold out' : p.status === 'open_soon' ? 'Coming soon' : 'Available';
                 return `
-                    <article class="product-card" style="background-color:${escapeHtml(p.cardColor || '#51301f')}" data-id="${escapeHtml(p.id)}">
-                        <div class="product-card-heading" style="background-color:${escapeHtml(p.headerColor || '#7a533a')}">${escapeHtml(p.name)} ${formatMoney(price)}</div>
-                        <div class="product-card-image">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(p.name)}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;"><span class="product-image-fallback" hidden>${escapeHtml(initials)}</span>` : `<span class="product-image-fallback">${escapeHtml(initials)}</span>`}</div>
-                        <div class="product-card-details">
-                            <p><span>Price:</span><strong>${formatMoneyPrefix(price)}</strong></p>
-                            <p><span>Term:</span><strong>${term}-day</strong></p>
-                            <p><span>Daily income:</span><strong>${formatMoneyPrefix(dailyIncome)}</strong></p>
-                            <p><span>Total income:</span><strong>${formatMoneyPrefix(totalIncome)}</strong></p>
+                    <article class="product-card" style="--product-accent:${escapeHtml(p.headerColor || '#7a533a')};--product-action:${escapeHtml(buttonColor)};--product-surface:${escapeHtml(p.cardColor || '#51301f')}" data-id="${escapeHtml(p.id)}">
+                        <div class="product-card-visual">
+                            ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(p.name)}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;"><span class="product-image-fallback" hidden>${escapeHtml(initials)}</span>` : `<span class="product-image-fallback">${escapeHtml(initials)}</span>`}
+                            <span class="product-status-badge product-status-${escapeHtml(p.status || 'active')}">${escapeHtml(statusLabel)}</span>
+                            ${p.category ? `<span class="product-category-badge">${escapeHtml(p.category)}</span>` : ''}
                         </div>
-                        <button type="button" class="product-buy-button product-status-${escapeHtml(p.status || 'active')}" style="background-color:${escapeHtml(buttonColor)}" data-action="purchase" ${canPurchase ? '' : 'disabled'}>${purchasedProductIds.has(p.id) ? 'ALREADY PURCHASED' : productStatus}</button>
+                        <div class="product-card-content">
+                            <div class="product-card-title-row">
+                                <div><p class="product-card-eyebrow">INVESTMENT PLAN</p><h2>${escapeHtml(p.name)}</h2></div>
+                                <div class="product-price"><small>Starting at</small><strong>${formatMoneyPrefix(price)}</strong></div>
+                            </div>
+                            ${p.description ? `<p class="product-card-description">${escapeHtml(p.description)}</p>` : ''}
+                            <div class="product-card-details">
+                                <div><span>Daily return</span><strong>${formatMoneyPrefix(dailyIncome)}</strong></div>
+                                <div><span>Total return</span><strong>${formatMoneyPrefix(totalIncome)}</strong></div>
+                                <div><span>Plan length</span><strong>${term.toLocaleString()} days</strong></div>
+                                <div><span>Slots left</span><strong>${remainingSlots.toLocaleString()}${totalSlots ? ` / ${totalSlots.toLocaleString()}` : ''}</strong></div>
+                            </div>
+                        </div>
+                        <button type="button" class="product-buy-button product-status-${escapeHtml(p.status || 'active')}" data-action="purchase" ${canPurchase ? '' : 'disabled'}>${purchasedProductIds.has(p.id) ? 'Already in my plans' : productStatus}<span aria-hidden="true">${canPurchase ? '→' : ''}</span></button>
                     </article>
                 `;
             }).join('') : '<p>No products available yet.</p>';

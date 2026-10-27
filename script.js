@@ -10,14 +10,43 @@ const FALLBACK_COUNTRIES = Object.freeze([
     { code: 'UG', name: 'Uganda', currency: 'UGX', flag: '🇺🇬', flagImage: '/assets/flags/ug.svg', dialCode: '+256', enabled: true },
     { code: 'ZM', name: 'Zambia', currency: 'ZMW', flag: '🇿🇲', flagImage: '/assets/flags/zm.svg', dialCode: '+260', enabled: true },
     { code: 'BI', name: 'Burundi', currency: 'BIF', flag: '🇧🇮', flagImage: '/assets/flags/bi.svg', dialCode: '+257', enabled: true },
+    { code: 'CD', name: 'DR Congo', currency: 'CDF', flag: '🇨🇩', flagImage: '/assets/flags/cd.svg', dialCode: '+243', enabled: true },
+    { code: 'KE', name: 'Kenya', currency: 'KES', flag: '🇰🇪', flagImage: '/assets/flags/ke.svg', dialCode: '+254', enabled: true },
+    { code: 'SO', name: 'Somalia', currency: 'SOS', flag: '🇸🇴', flagImage: '/assets/flags/so.svg', dialCode: '+252', enabled: true },
+    { code: 'SS', name: 'South Sudan', currency: 'SSP', flag: '🇸🇸', flagImage: '/assets/flags/ss.svg', dialCode: '+211', enabled: true },
+    { code: 'TZ', name: 'Tanzania', currency: 'TZS', flag: '🇹🇿', flagImage: '/assets/flags/tz.svg', dialCode: '+255', enabled: true },
 ]);
+const COUNTRY_PHONE_PLACEHOLDERS = Object.freeze({
+    RW: '7XXXXXXXX',
+    UG: '7XXXXXXXX',
+    ZM: '9XXXXXXXX',
+    BI: 'XXXXXXXX',
+    CD: '9XXXXXXXX',
+    KE: '7XXXXXXXX',
+    SO: 'XXXXXXXXX',
+    SS: '9XXXXXXXX',
+    TZ: '7XXXXXXXX',
+});
 
 async function loadAvailableCountries() {
     try {
-        const { countries } = await BmgApi.request('/countries', { auth: false });
-        return { countries: countries.filter((country) => country.enabled), fallback: false };
+        const { countries } = await BmgApi.request('/countries', { auth: false, timeoutMs: 1500 });
+        const enabledCountries = countries.filter((country) => country.enabled);
+        if (!enabledCountries.length) throw new Error('No countries are currently enabled.');
+        return { countries: enabledCountries, fallback: false };
     } catch (error) {
         return { countries: FALLBACK_COUNTRIES, fallback: true, error };
+    }
+}
+
+function renderCountryOptions(select, countries, preferredCode) {
+    const selectedCode = select.value || preferredCode;
+    select.replaceChildren(new Option('Select', ''));
+    countries.forEach((country) => {
+        select.add(new Option(`${country.name} (${country.dialCode})`, country.code));
+    });
+    if (countries.some((country) => country.code === selectedCode)) {
+        select.value = selectedCode;
     }
 }
 
@@ -70,84 +99,80 @@ document.addEventListener('DOMContentLoaded', () => {
     const query = new URLSearchParams(window.location.search);
     const referralFromLink = (query.get('ref') || query.get('referralCode') || '').trim();
     const linkedCountryCode = (query.get('country') || query.get('countryCode') || '').trim().toUpperCase();
-    let availableCountries = [];
+    let availableCountries = [...FALLBACK_COUNTRIES];
     const phonePatterns = {
         RW: /^0?7\d{8}$/,
         UG: /^0?7\d{8}$/,
         ZM: /^0?9\d{8}$/,
         BI: /^[267]\d{7}$/,
+        CD: /^0?[89]\d{8}$/,
+        KE: /^0?[17]\d{8}$/,
+        SO: /^0?[679]\d{8}$/,
+        SS: /^0?[79]\d{8}$/,
+        TZ: /^0?[6789]\d{8}$/,
     };
 
-    loadAvailableCountries().then(({ countries, fallback, error }) => {
-        availableCountries = countries;
-        countryCode.replaceChildren(new Option('Select', ''));
-        availableCountries.forEach((country) => {
-            countryCode.add(new Option(`${country.name} (${country.dialCode})`, country.code));
+    const updatePhoneDialCode = () => {
+        const selectedCountry = availableCountries.find((country) => country.code === countryCode.value);
+        phoneDialCode.textContent = selectedCountry?.dialCode || '';
+        const phoneLength = selectedCountry?.code === 'BI' ? 8 : selectedCountry ? 10 : 0;
+        phoneNumber.removeAttribute('minlength');
+        phoneNumber.removeAttribute('maxlength');
+        phoneNumber.maxLength = phoneLength || 10;
+        phoneNumber.minLength = selectedCountry?.code === 'BI' ? 8 : selectedCountry ? 9 : 0;
+        phoneNumber.placeholder = selectedCountry
+            ? COUNTRY_PHONE_PLACEHOLDERS[selectedCountry.code] || 'Enter local phone number'
+            : 'Select a country first';
+        countryFlag.hidden = !selectedCountry?.flagImage;
+        if (selectedCountry?.flagImage) {
+            countryFlag.src = selectedCountry.flagImage;
+            countryFlag.alt = `${selectedCountry.name} flag`;
+        } else {
+            countryFlag.removeAttribute('src');
+            countryFlag.alt = '';
+        }
+        phoneNumber.value = phoneNumber.value.replace(/\D/g, '').slice(0, phoneNumber.maxLength);
+        validateForm();
+    };
+    const updateCountryLinks = () => {
+        const suffix = countryCode.value ? `?country=${encodeURIComponent(countryCode.value)}` : '';
+        document.querySelectorAll('.coffee-auth-tabs a, .auth-alt-action a').forEach((link) => {
+            link.href = `${link.getAttribute('href').split('?')[0]}${suffix}`;
         });
+    };
+    renderCountryOptions(countryCode, availableCountries, linkedCountryCode);
+    countryCode.addEventListener('change', updatePhoneDialCode);
+    countryCode.addEventListener('change', updateCountryLinks);
+    updatePhoneDialCode();
+    updateCountryLinks();
+
+    loadAvailableCountries().then(({ countries, fallback, error }) => {
+        const selectedCode = countryCode.value;
+        availableCountries = countries;
+        renderCountryOptions(countryCode, availableCountries, selectedCode || linkedCountryCode);
+        updatePhoneDialCode();
+        updateCountryLinks();
         if (fallback) {
             formStatus.textContent = `Country options are available, but registration needs the service connection. ${error.message}`;
             formStatus.className = 'form-status error';
-        }
-        if (linkedCountryCode && availableCountries.some((country) => country.code === linkedCountryCode)) {
-            countryCode.value = linkedCountryCode;
-        }
-        const updatePhoneDialCode = () => {
-            const selectedCountry = availableCountries.find((country) => country.code === countryCode.value);
-            phoneDialCode.textContent = selectedCountry?.dialCode || '';
-            const phoneLength = selectedCountry?.code === 'BI' ? 8 : selectedCountry ? 10 : 0;
-            phoneNumber.removeAttribute('minlength');
-            phoneNumber.removeAttribute('maxlength');
-            phoneNumber.maxLength = phoneLength || 10;
-            phoneNumber.minLength = selectedCountry?.code === 'BI' ? 8 : selectedCountry ? 9 : 0;
-            phoneNumber.placeholder = selectedCountry?.code === 'BI' ? 'XXXXXXXX'
-                : selectedCountry?.code === 'ZM' ? '9XXXXXXXX'
-                    : selectedCountry ? '7XXXXXXXX' : 'Select a country first';
-            countryFlag.hidden = !selectedCountry?.flagImage;
-            if (selectedCountry?.flagImage) {
-                countryFlag.src = selectedCountry.flagImage;
-                countryFlag.alt = `${selectedCountry.name} flag`;
-            } else {
-                countryFlag.removeAttribute('src');
-                countryFlag.alt = '';
-            }
-            phoneNumber.value = phoneNumber.value.replace(/\D/g, '').slice(0, phoneNumber.maxLength);
-            validateForm();
-        };
-        countryCode.addEventListener('change', updatePhoneDialCode);
-        updatePhoneDialCode();
-        const updateCountryLinks = () => {
-            const suffix = countryCode.value ? `?country=${encodeURIComponent(countryCode.value)}` : '';
-            document.querySelectorAll('.coffee-auth-tabs a, .auth-alt-action a').forEach((link) => {
-                link.href = `${link.getAttribute('href').split('?')[0]}${suffix}`;
-            });
-        };
-        countryCode.addEventListener('change', updateCountryLinks);
-        updateCountryLinks();
-        if (!countryCode.value) {
+        } else if (!countryCode.value) {
+            formStatus.textContent = '';
             detectCountryFromLocation(availableCountries).then((detectedCode) => {
-                if (countryCode.value) return;
-                if (detectedCode) {
+                if (!countryCode.value && detectedCode) {
                     countryCode.value = detectedCode;
                     updatePhoneDialCode();
                     updateCountryLinks();
-                    if (!fallback) {
-                        formStatus.textContent = 'Country selected from your browser location. You can change it from the country list.';
-                        formStatus.className = 'form-status success';
-                    }
-                } else {
-                    if (!fallback) formStatus.textContent = 'Could not detect a supported country. Choose one from the country list.';
+                    formStatus.textContent = 'Country selected from your browser location. You can change it from the country list.';
+                    formStatus.className = 'form-status success';
+                } else if (!countryCode.value) {
+                    formStatus.textContent = 'Could not detect a supported country. Choose one from the country list.';
                 }
             }).catch(() => {
-                if (!countryCode.value && !fallback) {
+                if (!countryCode.value) {
                     formStatus.textContent = 'Location permission was not granted. Choose your country from the list.';
                 }
             });
         }
-    }).catch((error) => {
-        countryCode.replaceChildren(new Option('Countries could not be loaded. Refresh and try again.', ''));
-        countryCode.disabled = true;
-        formStatus.textContent = error.message || 'Could not load available countries.';
-        formStatus.className = 'form-status error';
     });
 
     if (referralFromLink) {
@@ -299,88 +324,84 @@ document.addEventListener('DOMContentLoaded', () => {
     const togglePassword = document.getElementById('loginTogglePassword');
     const query = new URLSearchParams(window.location.search);
     const linkedCountryCode = (query.get('country') || query.get('countryCode') || '').trim().toUpperCase();
-    let availableCountries = [];
+    let availableCountries = [...FALLBACK_COUNTRIES];
     const phonePatterns = {
         RW: /^0?7\d{8}$/,
         UG: /^0?7\d{8}$/,
         ZM: /^0?9\d{8}$/,
         BI: /^[267]\d{7}$/,
+        CD: /^0?[89]\d{8}$/,
+        KE: /^0?[17]\d{8}$/,
+        SO: /^0?[679]\d{8}$/,
+        SS: /^0?[79]\d{8}$/,
+        TZ: /^0?[6789]\d{8}$/,
     };
 
-    loadAvailableCountries().then(({ countries, fallback, error }) => {
-        availableCountries = countries;
-        countryCode.replaceChildren(new Option('Select', ''));
-        availableCountries.forEach((country) => {
-            countryCode.add(new Option(`${country.name} (${country.dialCode})`, country.code));
+    const updateCountry = () => {
+        const selectedCountry = availableCountries.find((country) => country.code === countryCode.value);
+        const phoneLength = selectedCountry?.code === 'BI' ? 8 : selectedCountry ? 10 : 0;
+        phoneDialCode.textContent = selectedCountry?.dialCode || '';
+        phoneNumber.removeAttribute('minlength');
+        phoneNumber.removeAttribute('maxlength');
+        phoneNumber.maxLength = phoneLength || 10;
+        phoneNumber.minLength = selectedCountry?.code === 'BI' ? 8 : selectedCountry ? 9 : 0;
+        phoneNumber.placeholder = selectedCountry
+            ? COUNTRY_PHONE_PLACEHOLDERS[selectedCountry.code] || 'Enter local phone number'
+            : 'Select a country first';
+        phoneNumber.value = phoneNumber.value.replace(/\D/g, '').slice(0, phoneNumber.maxLength);
+        phoneFlag.hidden = !selectedCountry?.flagImage;
+        if (selectedCountry?.flagImage) {
+            phoneFlag.src = selectedCountry.flagImage;
+            phoneFlag.alt = `${selectedCountry.name} flag`;
+        } else {
+            phoneFlag.removeAttribute('src');
+            phoneFlag.alt = '';
+        }
+        validateForm();
+    };
+    const updateCountryLinks = () => {
+        const suffix = countryCode.value ? `?country=${encodeURIComponent(countryCode.value)}` : '';
+        document.querySelectorAll('.coffee-auth-tabs a, .auth-alt-action a').forEach((link) => {
+            link.href = `${link.getAttribute('href').split('?')[0]}${suffix}`;
         });
+    };
+    renderCountryOptions(countryCode, availableCountries, linkedCountryCode);
+    countryCode.addEventListener('change', updateCountry);
+    countryCode.addEventListener('change', updateCountryLinks);
+    phoneNumber.addEventListener('input', () => {
+        phoneNumber.value = phoneNumber.value.replace(/\D/g, '').slice(0, phoneNumber.maxLength);
+        validateForm();
+    });
+    updateCountry();
+    updateCountryLinks();
+
+    loadAvailableCountries().then(({ countries, fallback, error }) => {
+        const selectedCode = countryCode.value;
+        availableCountries = countries;
+        renderCountryOptions(countryCode, availableCountries, selectedCode || linkedCountryCode);
+        updateCountry();
+        updateCountryLinks();
         if (fallback) {
             formStatus.textContent = `Country options are available, but login needs the service connection. ${error.message}`;
             formStatus.className = 'form-status error';
-        }
-        if (availableCountries.some((country) => country.code === linkedCountryCode)) {
-            countryCode.value = linkedCountryCode;
-        }
-        const updateCountry = () => {
-            const selectedCountry = availableCountries.find((country) => country.code === countryCode.value);
-            const phoneLength = selectedCountry?.code === 'BI' ? 8 : selectedCountry ? 10 : 0;
-            phoneDialCode.textContent = selectedCountry?.dialCode || '';
-            phoneNumber.removeAttribute('minlength');
-            phoneNumber.removeAttribute('maxlength');
-            phoneNumber.maxLength = phoneLength || 10;
-            phoneNumber.minLength = selectedCountry?.code === 'BI' ? 8 : selectedCountry ? 9 : 0;
-            phoneNumber.placeholder = selectedCountry?.code === 'BI' ? 'XXXXXXXX'
-                : selectedCountry?.code === 'ZM' ? '9XXXXXXXX'
-                    : selectedCountry ? '7XXXXXXXX' : 'Select a country first';
-            phoneNumber.value = phoneNumber.value.replace(/\D/g, '').slice(0, phoneNumber.maxLength);
-            phoneFlag.hidden = !selectedCountry?.flagImage;
-            if (selectedCountry?.flagImage) {
-                phoneFlag.src = selectedCountry.flagImage;
-                phoneFlag.alt = `${selectedCountry.name} flag`;
-            } else {
-                phoneFlag.removeAttribute('src');
-                phoneFlag.alt = '';
-            }
-            validateForm();
-        };
-        countryCode.addEventListener('change', updateCountry);
-        phoneNumber.addEventListener('input', () => {
-            phoneNumber.value = phoneNumber.value.replace(/\D/g, '').slice(0, phoneNumber.maxLength);
-            validateForm();
-        });
-        updateCountry();
-        const updateCountryLinks = () => {
-            const suffix = countryCode.value ? `?country=${encodeURIComponent(countryCode.value)}` : '';
-            document.querySelectorAll('.coffee-auth-tabs a, .auth-alt-action a').forEach((link) => {
-                link.href = `${link.getAttribute('href').split('?')[0]}${suffix}`;
-            });
-        };
-        countryCode.addEventListener('change', updateCountryLinks);
-        updateCountryLinks();
-        if (!countryCode.value) {
+        } else if (!countryCode.value) {
+            formStatus.textContent = '';
             detectCountryFromLocation(availableCountries).then((detectedCode) => {
-                if (countryCode.value) return;
-                if (detectedCode) {
+                if (!countryCode.value && detectedCode) {
                     countryCode.value = detectedCode;
                     updateCountry();
                     updateCountryLinks();
-                    if (!fallback) {
-                        formStatus.textContent = 'Country selected from your browser location. You can change it from the country list.';
-                        formStatus.className = 'form-status success';
-                    }
-                } else {
-                    if (!fallback) formStatus.textContent = 'Could not detect a supported country. Choose one from the country list.';
+                    formStatus.textContent = 'Country selected from your browser location. You can change it from the country list.';
+                    formStatus.className = 'form-status success';
+                } else if (!countryCode.value) {
+                    formStatus.textContent = 'Could not detect a supported country. Choose one from the country list.';
                 }
             }).catch(() => {
-                if (!countryCode.value && !fallback) {
+                if (!countryCode.value) {
                     formStatus.textContent = 'Location permission was not granted. Choose your country from the list.';
                 }
             });
         }
-    }).catch((error) => {
-        countryCode.replaceChildren(new Option('Countries could not be loaded. Refresh and try again.', ''));
-        countryCode.disabled = true;
-        formStatus.textContent = error.message || 'Could not load available countries.';
-        formStatus.className = 'form-status error';
     });
 
     if (togglePassword) {

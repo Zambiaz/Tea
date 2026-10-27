@@ -97,7 +97,8 @@ router.get('/me', requireAuth, (req, res) => {
     const user = db.prepare(`SELECT u.*, p.name AS promoter_name, p.status AS promoter_status
         FROM users u LEFT JOIN promoter_profiles p ON p.id = u.promoter_id
         WHERE u.id = ? AND u.role = 'user'`).get(req.user.id);
-    res.json({ promoter: user.promoter_id ? { id: user.promoter_id, name: user.promoter_name, status: user.promoter_status, comment: user.promoter_comment || null, assignedAt: user.promoter_assigned_at || null } : null });
+    if (!user || !user.promoter_id) return res.json({ promoter: null });
+    res.json({ promoter: { id: user.promoter_id, name: user.promoter_name, status: user.promoter_status, comment: user.promoter_comment || null, assignedAt: user.promoter_assigned_at || null } });
 });
 
 router.put('/me/comment', requireAuth, (req, res) => {

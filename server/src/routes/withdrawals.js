@@ -66,6 +66,8 @@ function toPublicWithdrawal(row) {
         userId: row.user_id,
         userName: row.user_name,
         userPhone: row.user_phone,
+        userCountryCode: row.user_country_code || null,
+        currency: getCountry(row.user_country_code)?.currency || null,
         method: row.method,
         accountHolderName: row.account_holder_name,
         mobileMoneyNumber: row.mobile_money_number,
@@ -212,7 +214,7 @@ router.get('/', requireAdmin, (req, res) => {
     const where = status ? 'WHERE w.status = ?' : '';
     const params = status ? [status] : [];
     const rows = db.prepare(`
-        SELECT w.*, u.full_name AS user_name, u.phone_number AS user_phone
+        SELECT w.*, u.full_name AS user_name, u.phone_number AS user_phone, u.country_code AS user_country_code
         FROM withdrawals w
         JOIN users u ON u.id = w.user_id
         ${where}

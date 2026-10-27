@@ -50,6 +50,8 @@ function toPublicDeposit(row) {
         userId: row.user_id,
         userName: row.user_name,
         userPhone: row.user_phone,
+        userCountryCode: row.user_country_code || null,
+        currency: getCountry(row.user_country_code)?.currency || null,
         method: row.method,
         amount: row.amount,
         senderPhone: row.sender_phone,
@@ -102,7 +104,7 @@ router.get('/', requireAdmin, (req, res) => {
     const where = status ? 'WHERE d.status = ?' : '';
     const params = status ? [status] : [];
     const rows = db.prepare(`
-        SELECT d.*, u.full_name AS user_name, u.phone_number AS user_phone
+        SELECT d.*, u.full_name AS user_name, u.phone_number AS user_phone, u.country_code AS user_country_code
         FROM deposits d
         JOIN users u ON u.id = d.user_id
         ${where}
