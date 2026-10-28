@@ -43,7 +43,7 @@ function renderCountryOptions(select, countries, preferredCode) {
     const selectedCode = select.value || preferredCode;
     select.replaceChildren(new Option('Select', ''));
     countries.forEach((country) => {
-        select.add(new Option(`${country.name} (${country.dialCode})`, country.code));
+        select.add(new Option(`${country.flag || ''} ${country.name} (${country.dialCode})`.trim(), country.code));
     });
     if (countries.some((country) => country.code === selectedCode)) {
         select.value = selectedCode;
