@@ -5,7 +5,7 @@
     "api/[...path].js": {
       "includeFiles": "server/migrations/**"
     },
-    "api/auth/[...path].js": {
+    "api/[domain]/[...path].js": {
       "includeFiles": "server/migrations/**"
     }
   }

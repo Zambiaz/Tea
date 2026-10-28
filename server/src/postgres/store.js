@@ -111,7 +111,17 @@ async function seed(client) {
          VALUES (1, 1, 1, '[]') ON CONFLICT (id) DO NOTHING`,
     );
     const adminCount = await client.query("SELECT COUNT(*)::int AS count FROM users WHERE role = 'admin'");
-    if (Number(adminCount.rows[0].count) === 0 && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+    if (Number(adminCount.rows[0].count) === 0 && process.env.ADMIN_PHONE_NUMBER) {
+        const { rows } = await client.query(
+            'SELECT id FROM users WHERE phone_number = $1',
+            [process.env.ADMIN_PHONE_NUMBER.trim()],
+        );
+        if (!rows[0]) throw new Error('ADMIN_PHONE_NUMBER must match an existing registered account.');
+        await client.query(
+            "UPDATE users SET role = 'admin', auth_version = auth_version + 1 WHERE id = $1",
+            [rows[0].id],
+        );
+    } else if (Number(adminCount.rows[0].count) === 0 && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
         const code = `BMG${crypto.randomBytes(5).toString('hex').toUpperCase()}`;
         await client.query(
             `INSERT INTO users (id, full_name, phone_number, password_hash, role, country_code, referral_code, balance, status)

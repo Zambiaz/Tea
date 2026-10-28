@@ -173,26 +173,38 @@ test('PostgreSQL startup applies migrations and seeds defaults on an empty datab
     const originalQuery = pool.query;
     const originalConnect = pool.connect;
     const originalDatabaseUrl = process.env.DATABASE_URL;
+    const originalAdminPhoneNumber = process.env.ADMIN_PHONE_NUMBER;
     pool.query = (sql, params) => queryPGlite(database, sql, params);
     pool.connect = async () => ({
         query: (sql, params) => queryPGlite(database, sql, params),
         release() {},
     });
     process.env.DATABASE_URL = 'postgres://test.invalid/bmg';
+    process.env.ADMIN_PHONE_NUMBER = '0788830555';
 
     try {
+        await database.exec(migration);
+        await database.query(
+            "INSERT INTO users (id, full_name, phone_number, password_hash) VALUES ('bootstrap-admin', 'Admin Account', '0788830555', 'existing-hash')",
+        );
         await ensureReady();
         const { rows: migrations } = await database.query('SELECT version FROM schema_migrations');
         const { rows: settings } = await database.query('SELECT COUNT(*)::int AS count FROM settings');
         const { rows: countries } = await database.query('SELECT COUNT(*)::int AS count FROM country_configs');
+        const { rows: admin } = await database.query(
+            "SELECT role, password_hash FROM users WHERE phone_number = '0788830555'",
+        );
         assert.deepEqual(migrations, [{ version: '001_initial_schema' }]);
         assert.ok(settings[0].count >= 1);
         assert.ok(countries[0].count > 0);
+        assert.deepEqual(admin[0], { role: 'admin', password_hash: 'existing-hash' });
     } finally {
         pool.query = originalQuery;
         pool.connect = originalConnect;
         if (originalDatabaseUrl === undefined) delete process.env.DATABASE_URL;
         else process.env.DATABASE_URL = originalDatabaseUrl;
+        if (originalAdminPhoneNumber === undefined) delete process.env.ADMIN_PHONE_NUMBER;
+        else process.env.ADMIN_PHONE_NUMBER = originalAdminPhoneNumber;
         await database.close();
     }
 });
@@ -870,17 +882,21 @@ test('Vercel serverless entrypoint exports the PostgreSQL Express app', () => {
     process.env.DATABASE_URL = 'postgres://test.invalid/bmg';
     process.env.JWT_SECRET = 'test-only-secret-with-at-least-32-characters';
     const handler = require(path.join(__dirname, '..', '..', 'api', '[...path].js'));
-    const authHandler = require(path.join(__dirname, '..', '..', 'api', 'auth', '[...path].js'));
+    const nestedHandler = require(path.join(__dirname, '..', '..', 'api', '[domain]', '[...path].js'));
     const vercelConfig = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'vercel.json'), 'utf8'));
     const rootPackage = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8'));
     const serverPackage = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
     assert.equal(typeof handler, 'function');
-    assert.equal(authHandler, handler);
+    assert.equal(nestedHandler, handler);
     assert.equal(handler.locals.databaseDriver, 'postgres');
     assert.equal(vercelConfig.installCommand, 'npm ci');
     assert.deepEqual(rootPackage.dependencies, serverPackage.dependencies);
     assert.equal(vercelConfig.functions['api/[...path].js'].includeFiles, 'server/migrations/**');
-    assert.equal(vercelConfig.functions['api/auth/[...path].js'].includeFiles, 'server/migrations/**');
+    assert.equal(vercelConfig.functions['api/[domain]/[...path].js'].includeFiles, 'server/migrations/**');
+    assert.equal(
+        fs.readFileSync(path.join(__dirname, '..', '..', 'api', '[domain]', '[...path].js'), 'utf8').trim(),
+        "module.exports = require('../../server/src/index');",
+    );
     delete process.env.BMG_DATABASE_DRIVER;
     delete process.env.DATABASE_URL;
     delete process.env.JWT_SECRET;
