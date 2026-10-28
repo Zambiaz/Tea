@@ -871,9 +871,12 @@ test('Vercel serverless entrypoint exports the PostgreSQL Express app', () => {
     process.env.JWT_SECRET = 'test-only-secret-with-at-least-32-characters';
     const handler = require(path.join(__dirname, '..', '..', 'api', '[...path].js'));
     const vercelConfig = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'vercel.json'), 'utf8'));
+    const rootPackage = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf8'));
+    const serverPackage = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
     assert.equal(typeof handler, 'function');
     assert.equal(handler.locals.databaseDriver, 'postgres');
-    assert.equal(vercelConfig.installCommand, 'cd server && npm ci');
+    assert.equal(vercelConfig.installCommand, 'npm ci');
+    assert.deepEqual(rootPackage.dependencies, serverPackage.dependencies);
     assert.equal(vercelConfig.functions['api/[...path].js'].includeFiles, 'server/migrations/**');
     delete process.env.BMG_DATABASE_DRIVER;
     delete process.env.DATABASE_URL;

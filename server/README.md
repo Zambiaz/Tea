@@ -9,7 +9,7 @@ The API uses SQLite for local development unless PostgreSQL is selected:
 
 `src/index.js` exports the Express application and listens only when launched directly. PostgreSQL route modules mirror the SQLite API route and HTTP-method coverage. The root `api/[...path].js` entrypoint exposes the API to Vercel; static frontend files remain served from the project root.
 
-Vercel requires `BMG_DATABASE_DRIVER=postgres`, `DATABASE_URL`, and a secure `JWT_SECRET` environment variable before the API can serve production traffic. Do not put database credentials in this repository. The deployment configuration installs backend dependencies from `server/package-lock.json` and includes the SQL migration file in the serverless function bundle.
+Vercel requires `BMG_DATABASE_DRIVER=postgres`, `DATABASE_URL`, and a secure `JWT_SECRET` environment variable before the API can serve production traffic. Do not put database credentials in this repository. The root npm workspace installs backend dependencies into the deployment dependency tree, and the Vercel function configuration includes the SQL migration file in the serverless bundle.
 
 Run `npm test` from this directory to exercise migrations and isolated PostgreSQL API flows using disposable PGlite databases. These tests do not connect to Neon.
 
