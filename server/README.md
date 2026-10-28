@@ -7,7 +7,7 @@ The API uses SQLite for local development unless PostgreSQL is selected:
 - On the first PostgreSQL request, the server applies `migrations/001_initial_schema.sql` and seeds empty-database defaults. A starter admin is created only when both `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set.
 - The migration is schema-only. It does not import or copy local SQLite records.
 
-`src/index.js` exports the Express application and listens only when launched directly. PostgreSQL route modules mirror the SQLite API route and HTTP-method coverage. The root `api/[...path].js` entrypoint exposes the API to Vercel; static frontend files remain served from the project root.
+`src/index.js` exports the Express application and listens only when launched directly. PostgreSQL route modules mirror the SQLite API route and HTTP-method coverage. Vercel routes `/api/auth/*` through `api/auth/[...path].js` and the remaining API paths through `api/[...path].js`; both entrypoints export the same Express app. Static frontend files remain served from the project root.
 
 Vercel requires `BMG_DATABASE_DRIVER=postgres`, `DATABASE_URL`, and a secure `JWT_SECRET` environment variable before the API can serve production traffic. Do not put database credentials in this repository. The root npm workspace installs backend dependencies into the deployment dependency tree, and the Vercel function configuration includes the SQL migration file in the serverless bundle.
 

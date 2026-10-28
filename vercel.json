@@ -4,6 +4,9 @@
   "functions": {
     "api/[...path].js": {
       "includeFiles": "server/migrations/**"
+    },
+    "api/auth/[...path].js": {
+      "includeFiles": "server/migrations/**"
     }
   }
 }
