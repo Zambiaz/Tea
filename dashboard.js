@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             document.querySelector('.dash-main').prepend(balanceBar);
         }
+        balanceBar.hidden = ['product', 'team', 'me'].includes(name);
         document.querySelectorAll('.dash-view').forEach((v) => { v.hidden = true; });
         view.hidden = false;
         document.body.classList.toggle('home-active', name === 'home');
@@ -265,14 +266,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </article>`;
             }).join('') : '<p class="view-empty-state">You have no plans yet. Choose a product to get started.</p>';
             const sortedProducts = [...products].sort((first, second) => Number(first.price || 0) - Number(second.price || 0));
-            grid.innerHTML = sortedProducts.length ? sortedProducts.map((p) => {
+            const productPhotos = [
+                'assets/coffee-slides/coffee-brewing.jpg',
+                'assets/coffee-slides/coffee-beans.jpg',
+                'assets/coffee-slides/coffee-cafe.jpg',
+                'assets/coffee-slides/coffee-selection.jpg',
+                'assets/coffee-slides/iced-coffee.jpg',
+            ];
+            grid.innerHTML = sortedProducts.length ? sortedProducts.map((p, index) => {
                 const price = Number(p.price || 0);
                 const term = Number(p.investmentDurationDays || p.termDays || p.duration_days || 0);
                 const dailyIncome = Number(p.dailyIncomeAmount || p.dailyIncome || Math.round(price * Number(p.dailyIncomePercent || 0) / 100));
                 const totalIncome = Number(p.totalIncome || dailyIncome * term);
                 const remainingSlots = Math.max(0, Number(p.stock || 0));
                 const totalSlots = Math.max(remainingSlots, Number(p.totalSlots || p.total_slots || 0));
-                const image = p.imageProxyUrl || p.imageUrl || p.image_url || '';
+                const fallbackImage = productPhotos[index % productPhotos.length];
+                const image = p.imageProxyUrl || p.imageUrl || p.image_url || fallbackImage;
                 const initials = String(p.name || 'Product').split(/\s+/).map((part) => part[0]).join('').slice(0, 3).toUpperCase();
                 const productStatus = p.status === 'sold_out' || remainingSlots <= 0 ? 'SOLD OUT' : p.status === 'open_soon' ? 'OPEN SOON' : 'BUY NOW';
                 const canPurchase = p.status === 'active' && remainingSlots > 0 && !purchasedProductIds.has(p.id);
@@ -281,7 +290,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return `
                     <article class="product-card" style="--product-accent:${escapeHtml(p.headerColor || '#7a533a')};--product-action:${escapeHtml(buttonColor)};--product-surface:${escapeHtml(p.cardColor || '#51301f')}" data-id="${escapeHtml(p.id)}">
                         <div class="product-card-visual">
-                            ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(p.name)}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;"><span class="product-image-fallback" hidden>${escapeHtml(initials)}</span>` : `<span class="product-image-fallback">${escapeHtml(initials)}</span>`}
+                            <img src="${escapeHtml(image)}" data-fallback-src="${escapeHtml(fallbackImage)}" alt="${escapeHtml(p.name)}" onerror="if(this.dataset.fallbackSrc){this.src=this.dataset.fallbackSrc;this.dataset.fallbackSrc='';}else{this.hidden=true;this.nextElementSibling.hidden=false;}"><span class="product-image-fallback" hidden>${escapeHtml(initials)}</span>
                             <span class="product-status-badge product-status-${escapeHtml(p.status || 'active')}">${escapeHtml(statusLabel)}</span>
                             ${p.category ? `<span class="product-category-badge">${escapeHtml(p.category)}</span>` : ''}
                         </div>

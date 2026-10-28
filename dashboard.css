@@ -310,16 +310,17 @@
 #view-product .product-tabs { display: flex; gap: 5px; margin: 0 0 16px; padding: 4px; border-radius: 12px; background: #eadfd5; }
 #view-product .product-tab { flex: 1; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 9px; background: transparent; color: #705742; font-size: .84rem; font-weight: 700; cursor: pointer; }
 #view-product .product-tab.active { background: #6b432b; color: #fff; box-shadow: 0 3px 8px rgba(48, 25, 15, .18); }
-#view-product .product-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 14px; }
+#view-product .product-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px; }
 #view-product .product-card { border-color: #e8ded5; border-radius: 16px; box-shadow: 0 8px 22px rgba(48, 25, 15, .08); }
-#view-product .product-card-visual, #view-product .product-image-fallback { min-height: 156px; }
-#view-product .product-card-content { gap: 12px; padding: 14px; }
+#view-product .product-card-visual { height: 112px; min-height: 0; }
+#view-product .product-card-visual .product-image-fallback { min-height: 112px; }
+#view-product .product-card-content { gap: 8px; padding: 10px; }
 #view-product .product-card-title-row h2 { font-size: .98rem; }
-#view-product .product-card-details { gap: 7px; }
-#view-product .product-card-details > div { padding: 8px; border-radius: 9px; }
+#view-product .product-card-details { gap: 5px; }
+#view-product .product-card-details > div { padding: 6px 8px; border-radius: 8px; }
 #view-product .product-card-details span { font-size: .64rem; }
 #view-product .product-card-details strong { font-size: .75rem; }
-#view-product .product-buy-button { width: calc(100% - 28px); min-height: 42px; margin: 0 14px 14px; padding: 10px 12px; font-size: .8rem; }
+#view-product .product-buy-button { width: calc(100% - 20px); min-height: 38px; margin: 0 10px 10px; padding: 8px 10px; font-size: .8rem; }
 #view-product .add-product-button { width: 34px; height: 34px; background: #6b432b; }
 .my-plans-grid { display: grid; gap: 7px; }
 .my-plan-card { padding: 9px; border: 1px solid #dfd0c3; border-radius: 9px; background: #fffaf5; }
@@ -511,7 +512,8 @@
     .coffee-account-active .dash-main { padding: 9px 4vw 100px; }
     #view-product, #view-team, #view-me { padding: 8px; border-radius: 10px; }
     #view-product .product-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-    #view-product .product-card-visual, #view-product .product-image-fallback { min-height: 180px; }
+    #view-product .product-card-visual { height: 120px; min-height: 0; }
+    #view-product .product-card-visual .product-image-fallback { min-height: 120px; }
     #view-team .team-referral-card, #view-team .team-stat-card, #view-team .team-commission-detail { padding: 8px; }
     .me-quick-links { gap: 4px; }
     .me-quick-links button { min-height: 30px; }
@@ -752,6 +754,7 @@
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
 }
+.dashboard-balance-bar[hidden] { display: none; }
 .dashboard-balance-bar > span { font-size: .82rem; font-weight: 700; }
 .dashboard-balance-bar strong { color: #fff; font-size: 1rem; text-align: right; }
 .dashboard-balance-bar strong span:last-child { color: #f0daca; font-size: .8rem; }
