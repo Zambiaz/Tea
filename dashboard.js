@@ -32,6 +32,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error(`Dashboard view not found: ${name}`);
             return;
         }
+        const balanceBar = document.querySelector('.dashboard-balance-bar');
+        if (name === 'home') {
+            document.querySelector('#view-home .coffee-action-grid').after(balanceBar);
+        } else {
+            document.querySelector('.dash-main').prepend(balanceBar);
+        }
         document.querySelectorAll('.dash-view').forEach((v) => { v.hidden = true; });
         view.hidden = false;
         document.body.classList.toggle('home-active', name === 'home');
