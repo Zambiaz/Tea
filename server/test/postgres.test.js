@@ -892,17 +892,11 @@ test('Vercel serverless entrypoint exports the PostgreSQL Express app', () => {
     assert.equal(vercelConfig.installCommand, 'npm ci');
     assert.deepEqual(rootPackage.dependencies, serverPackage.dependencies);
     assert.equal(vercelConfig.functions['api/[...path].js'].includeFiles, 'server/migrations/**');
-    for (const route of [
-        'announcements', 'audit-logs', 'auth', 'countries', 'deposits', 'notifications',
-        'overview', 'presence', 'products', 'promoters', 'settings', 'sponsors', 'tasks',
-        'team', 'users', 'withdrawals',
-    ]) {
-        assert.equal(vercelConfig.functions[`api/${route}/[...path].js`].includeFiles, 'server/migrations/**');
-        assert.equal(
-            fs.readFileSync(path.join(__dirname, '..', '..', 'api', route, '[...path].js'), 'utf8').trim(),
-            "module.exports = require('../../server/src/index');",
-        );
-    }
+    assert.equal(vercelConfig.functions['api/auth/[...path].js'].includeFiles, 'server/migrations/**');
+    assert.equal(
+        fs.readFileSync(path.join(__dirname, '..', '..', 'api', 'auth', '[...path].js'), 'utf8').trim(),
+        "module.exports = require('../../server/src/index');",
+    );
     delete process.env.BMG_DATABASE_DRIVER;
     delete process.env.DATABASE_URL;
     delete process.env.JWT_SECRET;

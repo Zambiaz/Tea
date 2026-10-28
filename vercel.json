@@ -7,51 +7,6 @@
     },
     "api/auth/[...path].js": {
       "includeFiles": "server/migrations/**"
-    },
-    "api/announcements/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/audit-logs/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/countries/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/deposits/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/notifications/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/overview/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/presence/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/products/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/promoters/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/settings/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/sponsors/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/tasks/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/team/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/users/[...path].js": {
-      "includeFiles": "server/migrations/**"
-    },
-    "api/withdrawals/[...path].js": {
-      "includeFiles": "server/migrations/**"
     }
   }
 }
